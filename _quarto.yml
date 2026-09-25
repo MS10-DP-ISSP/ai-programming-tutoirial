@@ -1,0 +1,21 @@
+project:
+  type: website
+
+website:
+  title: "Introduction to Coding Agents"
+  navbar:
+    left:
+      - href: slides/slide.qmd
+        text: slide
+      - href: slides/nifs_seminar.qmd
+        text: NIFS seminar
+      - href: slides/beginners_seminar.qmd
+        text: Beginners seminar
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: cyborg
+    # css: styles.css
+    toc: true

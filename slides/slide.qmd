@@ -1,0 +1,42 @@
+---
+format:
+  revealjs:
+    theme: "black"
+    css: "../styles/style.css"
+    embed-resources: true
+    slide-number: true
+    show-notes: separate-page
+    mermaid:
+      theme: default
+    gfm:
+    mermaid-format: png
+---
+
+## AI プログラミング入門
+
+![](https://ms10ds.nifs.ac.jp/wp-content/uploads/2026/09/logo.png)
+
+講師: 寺崎敏志 (Satoshi Terasaki)
+
+---
+
+## 自己紹介
+
+- 名前: 寺崎敏志 (Satoshi Terasaki) 
+- 生まれは富山県
+- 所属: 物性研究所 川島G にて特任研究員
+  - 2026年5月から着任
+  - それまではソフトウェア関連で会社員・個人事業主で活動
+    - C/C++/Python/Julia/Fortran/JavaScript/数学
+  - 個人開発・兼業では AI エジェントを活用し Rust/Julia 周りのソフトウェア整備をしている．
+
+---
+
+## はじめに
+
+- 大規模言語モデル(LLM, Large Language Model)の登場で，文章要約，質疑応答，翻訳などの自然言語処理タスクをこなすことができるようになった．
+- OpenAI のような AI とチャットできるサービスがリリースされ一般の人が気軽に利用できるようになった．
+- コーディングに特化するエージェント e.g., Codex/Claude Code/Gemini/OpenCode etc... が登場しソフトウェア開発のあり方が大きく変わってきている．
+- 本講義では AI エージェントを使い，ソフトウェア開発をするための事柄を復習しつつ，AI を使ったソフトウェア開発の方法を案内する．
+
+---

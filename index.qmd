@@ -1,0 +1,25 @@
+---
+title: "Claude Code Getting started by SatoshiTerasaki"
+---
+
+## Description
+
+ソフトウェア開発の文脈でAIエージェントを使ってみる．
+
+## Handouts
+
+- [Slide](slides/slide.qmd)
+
+## Appendix
+
+This website is built with [Quarto](https://quarto.org/).
+This website may be used freely for educational and research purposes.
+
+### How to view the website locally
+
+Download Quarto from [here](https://quarto.org/docs/download/) to use the `quarto` command. Then, just run:
+
+```sh
+$ cd path/to/this/directory
+$ quarto preview
+```

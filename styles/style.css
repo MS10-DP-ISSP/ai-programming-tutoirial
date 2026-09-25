@@ -1,0 +1,36 @@
+#title-slide .title {
+    font-size: 60px;
+}
+
+section h2 {
+    font-size: 40px;
+}
+
+section h3 {
+    font-size: 30px;
+}
+
+section p {
+    font-size: 24px;
+}
+
+section code {
+    font-size: 10px;
+}
+
+section pre {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+section pre code {
+    font-size: 0.7em;
+}
+
+section ul {
+    font-size:24px;
+}
+
+section li {
+    font-size: 24px;
+}
