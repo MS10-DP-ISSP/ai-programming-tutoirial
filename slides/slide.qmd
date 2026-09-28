@@ -20,23 +20,339 @@ format:
 
 ---
 
+## はじめに
+
+- 大規模言語モデル(LLM, Large Language Model)の登場で，文章要約，質疑応答，翻訳などの自然言語処理タスクをこなすことができるようになった
+- OpenAI のような AI とチャットできるサービスがリリースされ一般の人が気軽に利用できるようになった
+- コーディングに特化するエージェント e.g., Codex/Claude Code/Gemini/OpenCode etc... が登場しソフトウェア開発のあり方が大きく変わってきている
+- 本講義では AI エージェントを使い，ソフトウェア開発をするための事柄を復習しつつ，AI を使ったソフトウェア開発の方法を案内する
+
+---
+
 ## 自己紹介
 
-- 名前: 寺崎敏志 (Satoshi Terasaki) 
+- 名前: 寺崎敏志 (Satoshi Terasaki)
 - 生まれは富山県
 - 所属: 物性研究所 川島G にて特任研究員
   - 2026年5月から着任
   - それまではソフトウェア関連で会社員・個人事業主で活動
     - C/C++/Python/Julia/Fortran/JavaScript/数学
-  - 個人開発・兼業では AI エジェントを活用し Rust/Julia 周りのソフトウェア整備をしている．
+  - 個人開発・兼業では AI エジェントを活用し Rust/Julia 周りのソフトウェア整備をしている
 
 ---
 
-## はじめに
+## 個人の活動で行っていること: PythonRNGs.jl
 
-- 大規模言語モデル(LLM, Large Language Model)の登場で，文章要約，質疑応答，翻訳などの自然言語処理タスクをこなすことができるようになった．
-- OpenAI のような AI とチャットできるサービスがリリースされ一般の人が気軽に利用できるようになった．
-- コーディングに特化するエージェント e.g., Codex/Claude Code/Gemini/OpenCode etc... が登場しソフトウェア開発のあり方が大きく変わってきている．
-- 本講義では AI エージェントを使い，ソフトウェア開発をするための事柄を復習しつつ，AI を使ったソフトウェア開発の方法を案内する．
+Python の乱数生成器を Julia から呼び出すためのパッケージ．
+
+```julia
+using PythonRNGs
+using Random: Random
+
+# random.random
+example1(seed) = rand(PythonRandom(seed), 2, 3)
+# np.random.random
+example2(seed) = rand(NumPyRandom(seed), 2, 3)
+# np.random.default_rng(42)
+example3(seed) = rand(NumPyDefaultRNG(seed), 2, 3)
+```
 
 ---
+
+## 個人の活動で行っていること: RustCall.jl
+
+Rust の資源を Julia から呼び出すためのパッケージ．
+
+```julia
+using RustCall
+
+rust"""
+#[julia]
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+"""
+
+# Call directly - wrapper is auto-generated
+add(10, 20)  # => 30
+```
+
+---
+
+## 個人の活動で行っていること: QuantumEnvelopingAlgebras.jl
+
+量子群の計算をするためのパッケージ．
+
+```julia
+import AbstractAlgebra as AA
+using QuantumEnvelopingAlgebras
+
+R, q = AA.rational_function_field(AA.QQ, :q)
+U, (E, F, K, Ki) = uqsl2(R, q)
+
+@assert E*F - F*E == (K - Ki)/(q - inv(q))
+@assert K*Ki == one(U)
+```
+
+---
+
+## 実は
+
+- これらの紹介したソフトウェアは AI を活用しています
+  - 私が担当した 9 割の実装は AI によって生成したものです
+  - AI のおかげで多くのソフトウェアを開発することができるようになりました
+
+- 自分は事前コンパイルするタイプのプログラミング言語は苦手
+  - AI が代わりに書いてくれるおかげでより多くのソフトウェアを開発することができるようになりました
+  - Rust, Swift, TypeScript などのプログラミング言語を使ったソフトウェア開発も行っています
+
+---
+
+## AI Driven Development
+
+- 人間は自然言語で作りたいものを指示し AI Agent はソースコードを生成・コマンドの実行を行う
+  - AI を用いて開発を効率よく進める手法を AI-driven 開発と呼ぶ
+
+![](assets/ai-driven-development.png)
+
+---
+
+## 従来のソフトウェア開発を振り返る
+
+:::{.columns}
+::: {.column width="50%"}
+- アイデアを考える・仕様を定める
+- コードを書く
+  - アルゴリズムの実装
+    - デバッグを行う
+  - テストを書く
+  - ドキュメントを書く
+- 必要に応じてリファクタリングを行う
+- 運用・メンテナンスを行う
+- 上記の繰り返しをする
+:::
+
+::: {.column width="50%"}
+![](assets/conventional_software_development.png)
+:::
+:::
+
+---
+
+## ところで
+
+:::{.columns}
+::: {.column width="50%"}
+- アイデアを考える・仕様を定める
+- コードを書く
+  - アルゴリズムの実装
+    - デバッグを行う
+  - テストを書く
+  - ドキュメントを書く
+- 必要に応じてリファクタリングを行う
+- 運用・メンテナンスを行う
+- 上記の繰り返しをする
+:::
+
+::: {.column width="50%"}
+- あなたは全部真面目に取り組みましたか？
+- あなたは全部真面目に取り組んでいますか？
+- 常に効率の良い開発方法を考えていましたか？
+- 常に効率の良い開発環境を提供していますか？
+- 本当ですか？
+  - 特に，テストを書くこと
+  - ドキュメントを書くこと
+:::
+:::
+
+---
+
+## 現実
+
+:::{.columns}
+::: {.column width="40%"}
+![](assets/in_reality.png)
+:::
+
+::: {.column width="60%"}
+- ソースコードはどこですか？
+  - どれが最新のコードですか？
+  - バージョン管理されてない!!!
+  - code is available!, coming soon! (Not Found)
+- ドキュメントがない
+  - 古い，間違っている
+- なぜこの機能があるのか？
+  - 誰が書いたの？
+- テストがない
+  - 変更したコードが正しく動くかがわからない．
+- コンパイルができない
+  - 実行時にエラーが起きる(セグメンテーションフォルト)
+  - 動くけれど変な値が出る
+:::
+:::
+
+---
+
+## 再現性のあるソフトウェアを！！！
+
+:::{.columns}
+::: {.column width="40%"}
+![](assets/in_reality.png)
+:::
+
+::: {.column width="60%"}
+- 企業だろうと，研究所だろうと立場がどうあれ，ここにいる皆さんは広義のソフトウェア開発者です
+  - 現代的な開発手法を取り入れることを努力するのは必須のスキルです
+  - 人を動かす立場の人は快適な開発環境を整えることは必須の役割です
+- 再現性があり，安定して動作するソフトウェアを作ることが重要です
+- AI を活用したソフトウェア開発は再現性のあるソフトウェアを作るための一つの解決策です
+  - その前に，現代的なソフトウェア開発をするための基盤を整える必要があります
+:::
+:::
+
+---
+
+## 人間と機械
+
+- 人間は「創造」することができるが「疲れる」,「飽きる」,「固執する」，「知識を秘密にする」
+  - 「疲れる」: `git commit -m "update" git commit -m "fix"` を使いまくる
+
+```{mermaid}
+gitGraph
+  commit id: "init"
+  commit id: "wip"
+  commit id: "tmp"
+  commit id: "fix"
+  commit id: "fix fix"
+  commit id: "ok"
+  branch hotfix
+  checkout hotfix
+  commit id: "pls"
+  commit id: "final"
+  checkout main
+  merge hotfix id: "merge??"
+  commit id: "real final (actually)"
+```
+
+- 「飽きる」: メンテナンスを止めてしまう
+- 「固執する」: 特定のプログラミング言語を使い続ける
+  - 数十年の単位で固執するとパッケージマネージャを使うなど現代的な開発手法を取り入れることが困難な環境を生む
+- 「知識を秘密にする」: 知っていることを秘密にしてしまう
+    - 秘伝のタレができてしまう
+
+---
+
+## 人間と機械
+
+- 機械は「飽きない」,「疲れない」,「モデルが成長」, 「聞いたら教えてくれる」
+  - コードの差分から適切なコミット・プリクエストの概要を作成してくれる
+
+```{mermaid}
+gitGraph
+  commit id: "chore: initialize repository"
+  commit id: "docs: add README and contribution guidelines"
+  commit id: "feat: add initial project scaffold"
+  commit id: "feat: implement core workflow"
+  commit id: "test: add unit tests for core workflow"
+  commit id: "refactor: simplify core workflow logic"
+  commit id: "ci: set up CI pipeline"
+  commit id: "chore: prepare v0.1.0 release"
+
+  branch hotfix
+  checkout hotfix
+  commit id: "fix: resolve crash on empty input"
+  commit id: "test: add regression test for empty input"
+
+  checkout main
+  merge hotfix id: "merge: hotfix crash on empty input"
+  commit id: "chore(release): v0.1.1"
+```
+
+- 様々な言語を使える．移植も得意
+- その時代・要請に応じて変更が可能．現代的な言語にマイグレーションが可能
+- (正しいかは別として)AI に質問すればなんでも答えてくれる
+
+---
+
+## 人間は不要か？
+
+:::{.columns}
+::: {.column width="70%"}
+- LLM は多くの知識を持っているが，研究者のように最先端の知識を持っているとは限らない．
+  - 限られたリソースの中で何を実装するか，しないかは人間の能力に左右される．
+- ソフトウェアエンジニアはコーディングする時間から解放されるが次のような能力は必要になる：
+  - どのような技術をどの場面で使うか
+  - 高品質なソフトウェアを作成・維持するためのアーキテクチャを考える
+  - 意思決定をする上位の能力
+  - コーディング以外に研究者と議論するための最低限のドメイン知識も求められるようになる．
+:::
+::: {.column width="30%"}
+![](assets/discussion_with_researchers.png)
+:::
+:::
+
+---
+
+## 現代的な開発手法への招待
+
+- AI を活用したソフトウェア開発をする以前に環境を整えましょう
+- バージョン管理をしましょう．
+  - Git/GitHub/GitLab などのエコシステムを活用しましょう
+- Issue Driven Development をしましょう
+  - 問題を定義し，それを解決するためのコードを書くことでソフトウェアを開発しましょう
+- TDD(Test Driven Development) をしましょう
+  - テストを先に書き，テストが通るようにコードを書く
+- CI(Continuous Integration)/CD(Continuous Deployment) パイプラインを構築しテスト・デプロイを自動化しましょう
+  - GitHub Actions, GitLab CI/CD
+  - クリーンな環境でビルドが通るか・テストが通るか
+  - ドキュメントを Web ページに公開
+  - `creates.io` や `PyPI` に登録
+
+---
+
+## 現代的な開発手法への招待
+
+- パッケージマネージャが付属している言語を使いましょう
+  - 他の人が書いた便利な機能を取り込むことができる
+  - 他の人から再利用がしやすい
+- 他者とのコラボレーションが可能になる
+- self-contained に囲い込み，車輪の再発明を抑えることができる．
+
+---
+
+## 現代的プログラミング言語への招待
+
+- `Julia` は高級な動的言語でありながら高速な実行が可能
+  - (科学技術計算の文脈で)既存のプログラミング言語のいいとこどりを目指した欲張りな言語
+  - 添字が 1 始まり，多次元配列をサポート・column major
+  - ccall, cfunction を用いることで C/Fortran のライブラリを呼び出すことができる
+  - Python のライブラリを呼び出すことができる
+  - 普段 Fortran ユーザであれば試してみる価値はあり
+- 欠点:
+  - 動的言語であるので実行時に Runtime Error が発生する可能性がある
+    - 動的言語の宿命．JET.jl などの静的解析ツールを使う
+  - 型不安定なコード, GC (ガベージコレクション) が頻発するケースではパフォーマンスが出にくい
+  - 配列を動的に確保しメモリアロケーションが発生するケースではパフォーマンスが出にくい
+    - もちろん対策方法はある. AI に適切な指示を与えることで解決する
+
+---
+
+## 現代的プログラミング言語への招待
+
+- `Rust` はシステムプログラミング言語として導入された言語，高速に動作
+  - コンパイルの時点で危険なコードを排除することができる．
+    - 未初期化変数，型の不一致をコンパイルの時点で検出することができる
+  - デットコード(未使用のコード)の検出など静的解析が優秀
+  - 普段 C/C++ ユーザであれば試してみる価値はあり
+  - CLI ツールをバイナリ配布することができる
+- 欠点:
+  - コンパイルに時間，コンパイル時に出る中間生成物の量によるストレージの圧迫
+  - `sccache`, `kache` を用いることでコンパイル時間を短縮することができる
+  - 所有権の理解など，学習コストがかかる
+    - AI によるコード生成により開発体験が劇的に改善します
+
+---
+
+## 例
+
+TODO： Fortran の production コードから抽出したバグ，エラーを Rust で防ぐことができる例
