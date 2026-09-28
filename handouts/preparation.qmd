@@ -1,0 +1,241 @@
+## 環境構築
+
+AI を用いたコーディングをする以前に，環境構築をする必要があります．
+
+- Git, GitHub 周り `git`, `gh`
+- Python 周り `uv`
+- Julia 周り `julia`
+- Rust 周り `cargo`/`rustc`
+- Node.js 周り `node`/`npm`/`npx`
+- その他ベンチコマンド `tmux`, `htop` を入れていく
+
+---
+
+## 注意事項
+
+- Linux/WSL ユーザは管理者権限を持っているものとする(自分のマシンとか).
+- macOS ユーザは [Homebrew](https://brew.sh/) を使用する.
+- Windows ユーザは [Winget](https://learn.microsoft.com/ja-jp/windows/package-manager/winget/) を使用する.
+  - Windows 11 であれば PowerShell を開けば `winget` が使える.
+- Nix のようなパッケージマネージャを知っている人はこの講義の対象者ではないので勝手に環境構築をして遊ぶこと．
+
+---
+
+### WSL を導入する方法
+
+Windows 11 であれば PowerShell を開けば WSL を経由することで Linux 環境を構築することができる．
+
+```powershell
+wsl.exe --install Ubuntu-24.04
+```
+
+PC 自体を再起動してから Ubuntu-24.04 をインストールする．
+
+---
+
+## Git のインストール
+
+Linux/WSL
+
+```sh
+sudo apt-get install git tig
+```
+
+macOS
+
+```sh
+brew install git tig
+```
+
+Windows
+
+```sh
+winget install --id Git.Git --source winget
+```
+
+```sh
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
+---
+
+## GitHub CLI `gh` のインストール
+
+https://cli.github.com/ の案内に従う．
+
+Linux/WSL
+
+```sh
+(type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+	&& sudo mkdir -p -m 755 /etc/apt/keyrings \
+	&& out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+	&& cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+	&& sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+	&& sudo mkdir -p -m 755 /etc/apt/sources.list.d \
+	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+	&& sudo apt update \
+	&& sudo apt install gh -y
+```
+
+macOS
+
+```sh
+brew install gh
+```
+
+Windows
+
+```sh
+winget install -e --id GitHub.cli --source winget
+```
+
+`gh auth login` で GitHub アカウントと連携する
+
+これで，GitHub のサービスを CLI から利用することができる．
+
+---
+
+## Python のインストール
+
+[uv](https://docs.astral.sh/uv/) を使用する．
+
+Linux/WSL
+
+```sh
+sudo apt-get install curl
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+macOS
+
+```sh
+brew install curl
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Windows
+
+```sh
+winget install --id Astral-sh.uv --source winget
+```
+
+```sh
+$ mkdir example
+$ cd example
+$ uv init
+$ uv add numpy
+$ uv run <your-script.py>
+```
+
+---
+
+## Julia のインストール
+
+https://julialang.org/downloads/ の案内に従う．
+
+Linux/WSL/macOS
+
+```sh
+$ curl -fsSL https://install.julialang.org | sh
+```
+
+Windows
+
+```powershell
+PS> winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore
+```
+
+## Rust のインストール
+
+Linux/WSL/macOS
+
+https://www.rust-lang.org/tools/install の案内に従う．
+
+
+```sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Windows
+
+https://learn.microsoft.com/ja-jp/windows/dev-environment/rust/setup?tabs=winget の案内に従う．
+
+管理者権限でPowerShell を開き，以下のコマンドを実行する．
+
+```powershell
+PS> winget install -e --source winget --id Microsoft.VisualStudio.2022.BuildTools `
+  --accept-source-agreements `
+  --accept-package-agreements `
+  --override "--wait --passive --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+```
+
+通常のPowerShell で以下のコマンドを実行する．
+
+```powershell
+PS> winget install Rustlang.Rustup --source winget
+```
+
+---
+
+## Node.js のインストール
+
+NodeJS は JavaScript の実行環境であり，npm を使用することで JavaScript のパッケージを管理することができる．
+
+https://nodejs.org/ja/download/ の案内に従う．
+
+Linux/WSL/macOS
+
+```sh
+# nvmをダウンロードしてインストールする：
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
+# シェルを再起動する代わりに実行する
+\. "$HOME/.nvm/nvm.sh"
+# Node.jsをダウンロードしてインストールする：
+nvm install 24
+# Node.jsのバージョンを確認する：
+node -v # "v24.21.0"が表示される。
+# npmのバージョンを確認する：
+npm -v # "11.19.0"が表示される。
+```
+
+Windows
+
+```powershell
+PS> winget install --id OpenJS.NodeJS.LTS --source winget
+```
+
+```powershell
+PS> node -v
+PS> npm -v
+```
+
+---
+
+## その他ベンチコマンドのインストール
+
+Linux/WSL/macOS
+
+```sh
+sudo apt-get install tmux htop
+```
+
+macOS
+
+```sh
+brew install tmux htop
+```
+
+Windows
+
+参考: [psmuxでWindows 11＋PowerShellでtmux](https://qiita.com/charon/items/4ec359cd8a9d0d4f0b84) by `@charon` に従い，`tmux` をインストールする．
+
+```powershell
+PS> winget install psmux --source winget
+```
+
+Windows は `htop` の代わりに `btm` を使用する．
+
+```powershell
+PS> winget install Clement.bottom --source winget
+```

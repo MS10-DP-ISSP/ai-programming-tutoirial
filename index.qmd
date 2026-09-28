@@ -9,6 +9,7 @@ title: "Claude Code Getting started by SatoshiTerasaki"
 ## Handouts
 
 - [Slide](slides/slide.qmd)
+- [Preparation](handouts/preparation.qmd)
 
 ## Appendix
 
