@@ -7,7 +7,9 @@ AI を用いたコーディングをする以前に，環境構築をする必�
 - Julia 周り `julia`
 - Rust 周り `cargo`/`rustc`
 - Node.js 周り `node`/`npm`/`npx`
-- その他ベンチコマンド `tmux`, `htop` を入れていく
+- Docker 周り `docker`, `devcontainer`
+- その他コマンド `tmux`, `htop`, `btm` を入れていく
+- AI Agent の導入 `claude`, `codex`, `cursor`, `opencode`
 
 ---
 
@@ -239,3 +241,29 @@ Windows は `htop` の代わりに `btm` を使用する．
 ```powershell
 PS> winget install Clement.bottom --source winget
 ```
+
+---
+
+## Docker のインストール
+
+https://docs.docker.com/get-docker/ の案内に従う．
+
+TBD
+
+---
+
+## DevContainer のインストール
+
+TBD
+
+---
+
+## AI Agent の導入
+
+Claude Code
+
+OpenAI Codex
+
+Cursor
+
+OpenCode
