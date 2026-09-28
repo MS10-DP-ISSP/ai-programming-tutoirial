@@ -117,6 +117,10 @@ U, (E, F, K, Ki) = uqsl2(R, q)
 
 ---
 
+# 従来のソフトウェア開発について
+
+---
+
 ## 従来のソフトウェア開発を振り返る
 
 :::{.columns}
@@ -341,10 +345,12 @@ gitGraph
 
 - `Rust` はシステムプログラミング言語として導入された言語，高速に動作
   - コンパイルの時点で危険なコードを排除することができる．
-    - 未初期化変数，型の不一致をコンパイルの時点で検出することができる
+    - 未初期化変数，型の不一致，配列の範囲外アクセスをコンパイルの時点で検出することができる
   - デットコード(未使用のコード)の検出など静的解析が優秀
+  - `cargo build` で簡単にビルドを進めることができる．
+    - オレオレ CMakeLists.txt Makefile を書かなくても良い．
   - 普段 C/C++ ユーザであれば試してみる価値はあり
-  - CLI ツールをバイナリ配布することができる
+  - CLI ツールを配布することができる．
 - 欠点:
   - コンパイルに時間，コンパイル時に出る中間生成物の量によるストレージの圧迫
   - `sccache`, `kache` を用いることでコンパイル時間を短縮することができる
@@ -353,6 +359,285 @@ gitGraph
 
 ---
 
-## 例
+# Fortran と Rust の比較
 
-TODO： Fortran の production コードから抽出したバグ，エラーを Rust で防ぐことができる例
+実際に存在しているコードから MWE(Minimum Working Example) を作成して比較します．
+
+使ったプロンプト
+
+```text
+このFortranプロジェクトを読んで，潜在的なバグを引き起こす箇所を指摘してください．
+エラーを再現するための MWE(Minimum Working Example) を作成してください．
+Rust ではどのように記述できるかも示してください．
+```
+
+---
+
+## 関数の結果を代入せずに戻る
+
+同符号なら `return` するが、関数結果には一度も代入しない
+
+:::{.columns}
+::: {.column width="50%"}
+```fortran
+program main
+  implicit none
+  print *, root(1.0, 2.0)
+  print *, root(1.0, -5.0)
+contains
+  real function root(a, b)
+    real, intent(in) :: a, b
+    if (a * b > 0.0) return
+    root = 0.5*(a + b)
+  end function root
+end program main
+```
+
+```sh
+$ gfortran -O0 repro.f90 && ./a.out
+   1.40129846E-45
+  -2.00000000
+```
+:::
+::: {.column width="50%"}
+```rust
+fn root(a: f64, b: f64) -> f64 {
+    let result: f64;
+    if a * b > 0.0 {
+        return result;
+    }
+    0.5 * (a + b)
+}
+
+fn main() {
+    println!("{}", root(1.0, 2.0));
+}
+```
+
+```sh
+$ rustc repro.rs
+error[E0381]: used binding `result` isn't initialized
+```
+:::
+:::
+
+---
+
+## 範囲外アクセス
+
+- `-O3` フラグでコンパイルすると `a` だけではなく `b` の方にも値を書いてしまう．(意図しない書き込み)
+- Rust では `panic` を発生し処理を止める．
+
+:::{.columns}
+::: {.column width="50%"}
+```fortran
+program main
+  implicit none
+  real :: a(4)
+  real :: b(4) ! Uninitialized array
+  integer :: i, n
+  n = 7
+  do i = 1, n
+     a(i) = real(i)
+  end do
+  print *, a
+  print *, b
+end program main
+```
+
+```sh
+$ gfortran -O3 repro.f90 && ./a.out
+   1.00000000       2.00000000       3.00000000       4.00000000
+   5.00000000       6.00000000       7.00000000       0.00000000
+```
+:::
+::: {.column width="50%"}
+```rust
+fn main() {
+    let mut a = [0.0f64; 4];
+    let n = 6;
+    for i in 1..=n {
+        a[i - 1] = i as f64;
+    }
+    println!("{a:?}");
+}
+```
+
+```sh
+$ rustc -C opt-level=3 repro.rs && ./repro
+thread 'main' (5500909) panicked at repro.rs:5:9:
+index out of bounds: the len is 4 but the index is 4
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+```
+:::
+:::
+
+---
+
+## 代入していない変数を式に使う
+
+- Fortran だとコンパイルも通るし，実行もされてしまう．
+- Rust は初期化していない束縛を読めず、コンパイルできない。
+
+:::{.columns}
+::: {.column width="50%"}
+```fortran
+program main
+  implicit none
+  real :: omega, factor
+  factor = 1.0/omega**2
+  print *, factor
+end program main
+```
+
+```sh
+$ gfortran repro.f90 && ./a.out
+         Infinity
+```
+:::
+::: {.column width="50%"}
+```rust
+fn main() {
+    let omega: f64;
+    let factor = 1.0 / omega.powi(2);
+    println!("{factor}");
+}
+```
+
+```sh
+$ rustc repro.rs
+error[E0381]: used binding `omega` isn't initialized
+ --> repro.rs:3:24
+  |
+2 |     let omega: f64;
+  |         ----- binding declared here but left uninitialized
+3 |     let factor = 1.0 / omega.powi(2);
+  |                        ^^^^^ `omega` used here but it isn't initialized
+```
+:::
+:::
+
+---
+
+## ローカル変数が外側の値を隠す
+
+- ローカルの `omega` がモジュールの `omega` を隠す. 外側には `2.0` があるが、サブルーチン内の同名の変数には一度も代入しない.
+
+:::{.columns}
+::: {.column width="50%"}
+```fortran
+module m
+  implicit none
+  real :: omega = 2.0
+contains
+  subroutine setup()
+    real :: omega
+    print *, omega
+  end subroutine setup
+end module m
+
+program main
+  use m
+  call setup()
+end program main
+```
+
+```sh
+$ gfortran repro.f90 && ./a.out
+   2.80259693E-45
+```
+:::
+::: {.column width="50%"}
+```rust
+fn setup(_omega_outer: f64) -> f64 {
+    let omega: f64;
+    omega
+}
+
+fn main() {
+    println!("{}", setup(2.0));
+}
+
+```
+
+```sh
+$ rustc repro.rs
+rustc repro.rs
+error[E0381]: used binding `omega` isn't initialized
+ --> repro.rs:3:5
+  |
+2 |     let omega: f64;
+  |         ----- binding declared here but left uninitialized
+3 |     omega
+  |     ^^^^^ `omega` used here but it isn't initialized
+```
+:::
+:::
+
+---
+
+## まとめ
+
+このように Fortran (人手) で書かれたコードのバグを Rust ではコンパイラの時点で検出することができます．
+また，範囲外アクセスについてはパニックによって実行時エラーが発生し，意図しない数値計算を止めることができます．
+
+---
+
+## Julia に関して
+
+- Julia は JIT コンパイルで動作する．
+- 動的言語なので，Rust ほど厳格ではないが，高速な実行が可能な言語．
+- 実行時することでエラーを見つけることになる（動的言語の宿命）．
+  - とはいえ，未定義変数に対しては `UndefVarError`, 範囲外アクセスに対しては `BoundsError` などでエラー種類を見つけやすくなる．
+  - スタックトレースでどの箇所でエラーが起きているか特定することができる．
+- どれくらい速度が出るかは次のページで
+
+---
+
+## MvNormal のサンプリング速度比較
+
+64次元多変数正規分布 $N(\mu, \Sigma)$ に従うサンプリング点 20000 点を生成する速度の比較．
+
+- Setup は `Σ = L Lᵀ` をCholesky 分解で求めるコスト．
+- `x = μ + L z` を計算．`z` は `Ziggurat` 法によるサンプリングを使用．
+- [https://github.com/terasakisatoshi/MvNormalBenchmark](https://github.com/terasakisatoshi/MvNormalBenchmark) DeepSeek 4.1 Flash, Codex を使用．
+- Python は Numba を使用
+
+<div style="font-size: 0.7em">
+
+Language         | Setup (ms) | Avg sampling (ms) | Min sampling (ms)
+:--------------- | ---------: | ---------------: | ---------------:
+julia-ziggurat   | 0.072      | 9.633            | 9.583
+cxx-ziggurat     | 0.026      | 9.624            | 9.495
+fortran-ziggurat | 0.026      | 12.310           | 12.243
+rust-ziggurat    | 0.029      | 9.436            | 9.400
+python-ziggurat  | 0.131      | 15.547           | 15.475
+
+</div>
+
+---
+
+## まとめ
+
+Julia については文法を何も説明していないが，数値計算で使われている他の言語に劣らず高速に動作することがわかるだろう．
+
+---
+
+# 環境構築
+
+---
+
+- [Preparation](../handouts/preparation.qmd) を参照してください．
+
+---
+
+# Agentic Coding
+
+---
+
+## Agentic Coding
+
+- Agentic Coding は AI を用いてコーディングを行う手法
+- AI にコードを生成させることでコーディングを効率よく進める
+
+TODO: Write here
