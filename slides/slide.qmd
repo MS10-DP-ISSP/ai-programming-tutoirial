@@ -111,7 +111,7 @@ U, (E, F, K, Ki) = uqsl2(R, q)
 ## AI Driven Development
 
 - 人間は自然言語で作りたいものを指示し AI Agent はソースコードを生成・コマンドの実行を行う
-  - AI を用いて開発を効率よく進める手法を AI-driven 開発と呼ぶ
+  - AI を用いて開発を効率よく進める開発手法を AI-driven 開発と呼ぶ
 
 ![](assets/ai-driven-development.png)
 
@@ -585,11 +585,15 @@ error[E0381]: used binding `omega` isn't initialized
 
 ## Julia に関して
 
-- Julia は JIT コンパイルで動作する．
-- 動的言語なので，Rust ほど厳格ではないが，高速な実行が可能な言語．
-- 実行時することでエラーを見つけることになる（動的言語の宿命）．
-  - とはいえ，未定義変数に対しては `UndefVarError`, 範囲外アクセスに対しては `BoundsError` などでエラー種類を見つけやすくなる．
-  - スタックトレースでどの箇所でエラーが起きているか特定することができる．
+- Julia は JIT コンパイルで動作する
+- 動的言語なので，Rust ほど厳格ではないが，高速な実行が可能な言語
+- REPL, IJulia.jl, Pluto.jl などのインタラクティブな環境を提供している
+- パッケージマネージャが付属しているので，他の人が書いた便利な機能を取り込むことができる
+  - メンテナは科学技術計算周りのコミュニティが多いので，科学技術計算で使われている機能が利用できる
+- 実行時することでエラーを見つけることになる（動的言語の宿命）
+  - とはいえ，未定義変数に対しては `UndefVarError`, 範囲外アクセスに対しては `BoundsError` などでエラー種類を見つけやすくなる
+  - JET.jl を使用することで静的解析を行うことができるが，まだまだ発展途上です
+  - スタックトレースでどの箇所でエラーが起きているか特定することができる
 - どれくらい速度が出るかは次のページで
 
 ---
@@ -617,6 +621,27 @@ python-ziggurat  | 0.131      | 15.547           | 15.475
 
 ---
 
+## 簡単な Poisson 方程式のベンチマーク
+
+[https://github.com/terasakisatoshi/poisson_eq_jacobi_benchmark](https://github.com/terasakisatoshi/poisson_eq_jacobi_benchmark) Poisson 方程式の Jacobi 法を比較したベンチマーク．
+
+<div style="font-size: 0.7em">
+
+M5 チップ搭載の Macbook Pro での実行結果．
+
+| Implementation | Language | Time (s) |
+|---|---|---:|
+| julia | Julia | 3.977462 |
+| julia_unsafe | Julia (unsafe) | 3.443576 |
+| python | Python + Numba | 3.965009 |
+| cxx | C++23 | 3.582923 |
+| fortran | Fortran 2008 | 4.041347 |
+| rust | Rust | 4.620172 |
+
+</div>
+
+---
+
 ## まとめ
 
 Julia については文法を何も説明していないが，数値計算で使われている他の言語に劣らず高速に動作することがわかるだろう．
@@ -624,8 +649,6 @@ Julia については文法を何も説明していないが，数値計算で�
 ---
 
 # 環境構築
-
----
 
 - [Preparation](../handouts/preparation.qmd) を参照してください．
 
@@ -637,7 +660,9 @@ Julia については文法を何も説明していないが，数値計算で�
 
 ## Agentic Coding
 
-- Agentic Coding は AI を用いてコーディングを行う手法
-- AI にコードを生成させることでコーディングを効率よく進める
+- Agentic Coding は AI エージェントが自律的にコーディングを行う手法
+- デモは Claude Code, Cursor を使用するが，基本的なコンセプトは他のサービスでも同様
 
-TODO: Write here
+---
+
+
