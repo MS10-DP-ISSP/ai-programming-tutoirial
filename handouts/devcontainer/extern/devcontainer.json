@@ -1,0 +1,22 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+      "packages": "nano,git,tig,openssh-server,bubblewrap,socat"
+    },
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
+    "ghcr.io/va-h/devcontainers-features/uv:1": {
+      "shellAutocompletion": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "mounts": [
+    "source=claude-code-config,target=/home/vscode/.claude,type=volume"
+  ],
+  "containerEnv": {
+    "DISABLE_AUTOUPDATER": "1"
+  },
+  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.claude /home/vscode/.config"
+}

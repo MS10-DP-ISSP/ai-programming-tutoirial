@@ -1,0 +1,11 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+  "mounts": [
+    "source=codex-config,target=/home/vscode/.codex,type=volume"
+  ],
+  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.codex && npm install -g @openai/codex@0.159.2"
+}
