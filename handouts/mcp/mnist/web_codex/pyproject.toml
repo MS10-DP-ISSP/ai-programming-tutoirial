@@ -1,0 +1,21 @@
+[project]
+name = "mnist-web-codex"
+version = "0.1.0"
+description = "MNIST viewer: Codex calls a self-contained Python MNIST MCP server"
+requires-python = ">=3.13"
+dependencies = [
+    "fastmcp>=4.0.9",
+    "gradio>=6.28.0",
+    "numpy>=2.5.3",
+    "openai-codex>=0.157.0",
+    "pillow>=12.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
