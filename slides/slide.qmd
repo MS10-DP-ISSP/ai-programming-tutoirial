@@ -891,7 +891,7 @@ Sonnet 5.5 (medium) による生成物．諸々込みで10分で作成できる�
 
 ---
 
-## 基本的な使い方
+## 基本的なコマンド
 
 Claude Code
 
@@ -902,6 +902,9 @@ Claude Code
 /<skill-name> # コマンド・スキルの実行
 /plugins # プラグインの導入など
 /compact # コンテキストを圧縮
+/model # モデルの変更
+/resume # セッションの再開
+/goal # ゴールの設定
 /clear # 新しいセッションを開始
 ```
 
@@ -911,7 +914,10 @@ Codex
 /init # AGENTS.md の生成
 /login # ログイン
 /status # 使用量の確認
+/resume # セッションの再開
+/model # モデルの変更
 /compact # コンテキストを圧縮
+/goal # ゴールの設定
 /clear # 新しいセッションを開始
 ```
 
@@ -1013,6 +1019,22 @@ Codex
 
 ---
 
+## スキル導入時の注意事項
+
+- スキルはエージェントの振る舞いを変更するので，悪意のあるスキルを導入するとエージェントが不正な行動を行う可能性がある．
+- [skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) を使ってスキルに悪意のあるプロンプト，潜在的なリスクのあるスクリプトの実行の誘導を検知することができる．
+
+```sh
+$ uv init
+$ mkdir ./tmp
+$ cd ./tmp
+$ uv init
+$ uv add cisco-ai-skill-scanner
+$ uv run skill-scanner scan-all <path/to/skills> # スキルをスキャン
+```
+
+---
+
 ## スキルの使用法
 
 - 状況に応じてエージェントが自動的にスキルを使用する
@@ -1103,3 +1125,43 @@ Hello, Yamada Taro!
 
 ---
 
+## MNIST のデータを使ったサンプル
+
+Claude Code ユーザ向け
+
+```sh
+$ cd handouts/mcp/mnist/web_claude
+$ uv sync
+$ uv run python download_data.py
+$ uv run python app.py
+```
+
+Codex ユーザ向け
+
+```sh
+$ cd handouts/mcp/mnist/web_codex
+$ uv sync
+$ uv run python download_data.py
+$ uv run python app.py
+```
+
+---
+
+## サンドボックス環境の構築
+
+TBD
+
+---
+
+## その他応用
+
+- Coding Agent は他言語への移植が得意である．
+  - 単体テストが書かれていれば現代的な言語へ移行ができる
+- 複数のプログラミング言語を操ることができる．
+  - 複数の観点からアルゴリズム，パフォーマンスを見直すことができる．
+
+---
+
+## TODO
+
+GCD の例を入れる
