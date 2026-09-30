@@ -855,3 +855,251 @@ Sonnet 5.5 (medium) による生成物．諸々込みで10分で作成できる�
 
 ![](assets/collisions.gif)
 
+---
+
+## どのツール・エージェントを？
+
+- AI は常に進化するので，単純な答えはない．
+  - 各自の予算・目的・開発のフローに応じて適切なツール・エージェントを選ぶべき．
+  - 本講義は 20 ドルプランがあれば十分楽しめるはずだ．
+- ChatGPT を契約しているならば:
+  - Codex が使えるのでそれを使えばよい．
+  - 本講義の内容は GPT-5.6-Luna で十分
+- Claude を契約しているならば:
+  - 本講義の内容であれば Sonnet 5.5 (medium) で十分
+- VS Code のような開発体験を提供している IDE を使っているならば:
+  - Cursor を使えばよい
+  - Grok 4.7 High Fast というモデルを使えばよい．
+
+---
+
+## 私の場合
+
+あくまで個人の環境での話です．特定のサービスを推奨するものではありません！！！
+
+- ISSP の業務では Claude Code, Cursor を使っている
+- 個人の活動
+  - Claude Code (OSS デベロッパープログラムに加入)
+  - ChatGPT (画像生成，高校数学の問題を解く，諸々の相談，Codex)
+  - Cursor (文章執筆，スライドの作成)
+  - OpenCode (DeepSeek v4.1 Flash，API経由で)
+  - Kimi (AIが行った作業の日報作成用)
+- コーディングタスクは VPN 経由で自宅の Linux, macOS マシンにアクセスして行っている
+
+- ちなみに
+  - ウルトラワイドモニターは作業が捗る
+
+---
+
+## 基本的な使い方
+
+Claude Code
+
+```text
+/init # CLAUDE.md の生成
+/login # ログイン
+/usage # 使用量の確認
+/<skill-name> # コマンド・スキルの実行
+/plugins # プラグインの導入など
+/compact # コンテキストを圧縮
+/clear # 新しいセッションを開始
+```
+
+Codex
+
+```text
+/init # AGENTS.md の生成
+/login # ログイン
+/status # 使用量の確認
+/compact # コンテキストを圧縮
+/clear # 新しいセッションを開始
+```
+
+---
+
+## AI Agent の動作原理
+
+- ユーザが入力した指示(プロンプト)をエージェントが理解し，その指示に従って行動を行う．
+- 多くはクラウド環境にあるGPUなどのアクセラレータで計算を実施
+- 計算結果をクラウド環境から返却し，ユーザに提示する．
+- Bash, Edit, Read, Write などのファイルの操作，コマンドの実行を実施することがある．
+
+---
+
+## 注意事項
+
+- サービスによっては入力が学習に使われることもある．
+  - プライバシーポリシーを確認すること
+- 学習に使われない場合でも，外部にデータを送信することには変わらない．
+  - 個人情報(住所，パスワード，APIキー)を入力しない．
+  - 機密情報（各組織のルールに依存）を入力しない
+- 必要に応じて Local LLM の検討も行うとよい．
+
+---
+
+## AI Agent の動作原理
+
+ユーザが `i+1` 回目の会話を開始するとき，エージェントは 「1 から `i` 回目までのユーザメッセージと対応する回答」を Claude 内部が持っている機械学習モデルに入力として渡している．
+
+その入力をもとにモデルは回答を生成している．
+
+このようにしないと，「これまでの議論をまとめ」てといった人間の指示(プロンプト)への回答に対応できない．
+
+![](https://platform.claude.com/docs/images/context-window.svg)
+
+画像は [Claude の公式ドキュメントより引用](https://platform.claude.com/docs/en/build-with-claude/context-windows)．
+
+---
+
+## セッションが切れると会話を忘れる
+
+`/clear` コマンドを実行すると，セッションが切れる．それまでの会話は忘れてしまう．
+
+```text
+やっほー
+(Claude がやっほーというメッセージに対して回答する)
+/clear
+さっき言ったこと覚えてる？
+(Claude は覚えてないと回答する)
+```
+
+ナイーブに運用するとセッションごとに同じ説明をユーザは入れないといけない．
+
+---
+
+## セッションをずっと保持すれば？
+
+- そういうわけではない．
+- ワーキングメモリに投入するトークンが増えるにつれて，回答精度が低下するコンテキストロット context rot と呼ばれる現象が生じる．
+- 1回のセッションに投入するコンテキスト・文脈は必要なものに留めるのがよい．予算的にも，モデルの精度的にも．
+- 1 セッションでは一つの目的に集中するのがよい．
+- `/compact` コマンドを実行すると，コンテキストを圧縮することができる．
+
+---
+
+## `AGENTS.md`, `CLAUDE.md` の生成
+
+- プロジェクトごとのルール・原則をまとめたファイル．エージェントを起動するとこれが読み込まれる．
+- `/init` で既存のプロジェクトに対するルールを推測し，`AGENTS.md` を生成することもできる．
+- Claude Code では `CLAUDE.md` という名前で生成される．
+  - 最近 `AGENTS.md` を読み込むこともサポートされた．
+
+[Claude Code の公式ドキュメント](https://code.claude.com/docs/ja/memory#write-effective-instructions) によれば 200 行以下であることが望ましい．
+
+特定の状況で行うべき作業の内容，ワークフローの詳細はスキル(skills)として定義することができる.
+
+---
+
+## スキル(skills)
+
+特定の状況で行うべき作業の内容，ワークフローの詳細を記述したもの．実態YAML Frontmatter と Markdown フォーマットで記述されたファイル．
+
+![](https://platform.claude.com/docs/images/agent-skills-simple-file.png)
+
+`description` には発動条件を書く．Markdown には作業内容を記述する．
+
+---
+
+## スキルの例
+
+- [obra/superpowers](https://github.com/obra/superpowers)
+  - ソフトウェア開発のベストプラクティスに則り行動を促すスキル
+- [GiggleLiu/agentic-tests](https://github.com/GiggleLiu/agentic-tests)
+  - エージェントが生成したドキュメント，スキルが有効に動作するかを検証するスキル
+- [coji/natural-japanese](https://github.com/coji/natural-japanese)
+  - 自然な日本語での会話を促すスキル
+- [AtelierArith/atelier-arith-julia-development-skills](https://github.com/AtelierArith/atelier-arith-julia-development-skills)
+  - Julia でのソフトウェア開発のベストプラクティスに則り行動を促すスキル
+
+---
+
+## スキルの使用法
+
+- 状況に応じてエージェントが自動的にスキルを使用する
+- Claude Code, OpenCode では `/<skill-name>` のように明示的に呼び出すことができる．
+- "<skill-name> を使って XXX を行ってください" のように指示を出してもよい．
+
+---
+
+## MCP (Model Context Protocol)
+
+(おもに)AIツールが外部リソースを取得するために作られた通信プロトコルの一つ
+
+下記のようなことは，Bash, Web 検索するツールを用いない限り，苦手・事実上不可能．
+
+- 今何時？ # 時刻取得はコマンドで取得可能だが，LLM 自体がその知識を持っているわけではない
+- 今日の天気は？ # 天気予報は外部リソースへのアクセスが必要
+- "XXX のデータを見せて" # データベースへのアクセスが必要
+- "GitHub の Issue を読んで" # 外部リソースへのアクセスが必要
+
+---
+
+## MCP の例
+
+```
+$ claude mcp add --scope user time -- uvx mcp-server-time --local-timezone=Asia/Tokyo
+$ claude
+❯ 今何時？ シェルコマンドを使わないで教えてくれる？
+  Called time # time という MCP サーバーを呼び出している
+今は日本時間で 2026年9月30日（水）14:46 です。 # 時刻を返却している
+```
+
+[実装はこちら](https://github.com/modelcontextprotocol/servers/blob/4503e2d12b799448cd05f789dd40f9643a8d1a6c/src/time/src/mcp_server_time/server.py#L61-L71)
+
+アンインストールは次のようにして行うことができる．
+
+```sh
+$ claude mcp remove --scope user time
+```
+
+---
+
+## FastMCP による MCP サーバの作成
+
+FastMCP v2 packgae を使えば FastAPI のようなノリでサーバを作ることができる．
+
+```python
+from fastmcp import FastMCP
+
+mcp = FastMCP("demo-server")
+
+@mcp.tool()
+async def hello(name: str) -> str:
+    return f"Hello, {name}!"
+
+if __name__ == "__main__":
+    mcp.run()
+```
+
+## FastMCP のクライアント例
+
+```python
+
+# 前のページの server.py と同じ階層に作成
+import asyncio
+from fastmcp import Client
+
+async def test_hello():
+    async with Client("server.py") as client:
+        result = await client.call_tool(
+            "hello",
+            {
+                "name": "Yamada Taro"
+            }
+        )
+        print(result.structured_content["result"])
+
+if __name__ == "__main__":
+    asyncio.run(test_hello())
+```
+
+次のようになる
+
+```sh
+$ uv run client.py
+ INFO     Starting MCP server 'demo-server' with transport 'stdio'                                                                                   transport.py:209
+Hello, Yamada Taro!
+```
+
+---
+
