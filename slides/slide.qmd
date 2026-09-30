@@ -2278,29 +2278,29 @@ Refer [this discussion on MathOverflow](https://mathoverflow.net/questions/14194
 ## Answer (Julia)
 
 ```julia
-function count_upto_one()
+using Random: Xoshiro, AbstractRNG
+
+function count_upto_one(rng::AbstractRNG)
     counter = 0
     accumulated = 0.0
     while true
-        accumulated += rand()
+        accumulated += rand(rng)
         counter += 1
-        if accumulated >= 1.0
-            break
-        end
+        accumulated >= 1.0 && break
     end
     return counter
 end
 
-function main()
-    n_trial =1e8
-    total_count=0
-    for trial in 1:n_trial
-        total_count+=count_upto_one()
+function main(n_trial::Integer)
+    rng = Xoshiro(rand(UInt64))
+    total_count = 0
+    for _ in 1:n_trial
+        total_count += count_upto_one(rng)
     end
-    println(total_count/n_trial)
+    println(total_count / n_trial)
 end
 
-main()
+@time main(500_000_000)
 ```
 
 ---
