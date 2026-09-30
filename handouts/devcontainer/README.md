@@ -11,8 +11,6 @@ Dev Container の中で動かし、必要なコードとデータだけをマウ
 | `codex/`    | Codex CLI   | `codex login`          |
 | `opencode/` | opencode    | `opencode auth login`  |
 
-`extern/` には、追加の apt パッケージ (bubblewrap, socat など)、uv、GitHub CLI を含む参考用の構成があります。
-
 ## 事前準備
 
 - Docker (Docker Desktop など) が起動していること
@@ -86,7 +84,7 @@ $ docker rmi <image-name>          # build で --image-name を付けた場合
 $ docker volume rm codex-config    # 例: codex/ のログイン情報を消す
 ```
 
-`claude-code-config` は `claude/` と `extern/` で共有されます。他の Dev Container でも使っていないか確認してから削除してください。
+`claude-code-config` は Claude Code のログイン情報を保存するボリュームです。他の Dev Container でも使っていないか確認してから削除してください。
 
 ## トラブルシューティング
 
