@@ -1119,7 +1119,7 @@ if __name__ == "__main__":
 
 ```sh
 $ uv run client.py
- INFO     Starting MCP server 'demo-server' with transport 'stdio'                                                                                   transport.py:209
+ INFO     Starting MCP server 'demo-server' with transport 'stdio'
 Hello, Yamada Taro!
 ```
 
@@ -1165,3 +1165,4 @@ TBD
 ## TODO
 
 GCD の例を入れる
+
