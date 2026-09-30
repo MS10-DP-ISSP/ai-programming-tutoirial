@@ -20,6 +20,7 @@ AI を用いたコーディングをする以前に，環境構築をする必�
 - Windows ユーザは [Winget](https://learn.microsoft.com/ja-jp/windows/package-manager/winget/) を使用する.
   - Windows 11 であれば PowerShell を開けば `winget` が使える.
 - Nix のようなパッケージマネージャを知っている人はこの講義の対象者ではないので勝手に環境構築をして遊ぶこと．
+- すでに環境構築ができている方は読み流してよい．あくまでも参考程度に読んでほしい．
 
 ---
 
@@ -178,6 +179,19 @@ PS> winget install -e --source winget --id Microsoft.VisualStudio.2022.BuildTool
 PS> winget install Rustlang.Rustup --source winget
 ```
 
+動作確認
+
+```sh
+$ cargo new hello-world
+$ cd hello-world
+$ cargo run --release
+cargo run --release
+   Compiling hello-world v0.1.0 (path/to/your-workspace/hello-world)
+    Finished `release` profile [optimized] target(s) in 1.38s
+     Running `target/release/hello-world`
+Hello, world!
+```
+
 ---
 
 ## Node.js のインストール
@@ -219,13 +233,13 @@ PS> npm -v
 Linux/WSL/macOS
 
 ```sh
-sudo apt-get install tmux htop
+sudo apt-get install tmux htop ripgrep
 ```
 
 macOS
 
 ```sh
-brew install tmux htop
+brew install tmux htop rg
 ```
 
 Windows
@@ -246,24 +260,93 @@ PS> winget install Clement.bottom --source winget
 
 ## Docker のインストール
 
-https://docs.docker.com/get-docker/ の案内に従う．
+### Docker (`docker`)
 
-TBD
+Codex はユーザからの許可をバイパスするオプションを備えている．たとえば `--yolo` といったオプションだ．このようなオプションは便利だが 原理的には `rm -rf /` のような危険なコマンドの実行も許すことになる．このような状況を防ぐためにサンドボックス環境を使うのが望ましい．たとえば Docker が提供するコンテナはマウントするファイルを制御することで制限された範囲で AI Agent を行動させることが可能である．
+
+OS に応じてインストールすること:
+
+- [Install Docker Desktop on Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
+- [Install Docker Engine on Linux(Ubuntu)](https://docs.docker.com/engine/install/ubuntu/)
+- [Install Docker Desktop on Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+
+
+動作確認は下記のコマンドでできる:
+
+```sh
+$ docker run --rm hello-world
+```
 
 ---
 
 ## DevContainer のインストール
 
-TBD
+[https://code.visualstudio.com/docs/devcontainers/devcontainer-cli](https://code.visualstudio.com/docs/devcontainers/devcontainer-cli) を参考にすること．CLI は `npm` を使用してインストールする．
+
+Linux/WSL/macOS/Windows
+
+```sh
+$ npm install -g @devcontainers/cli
+```
+
+または Cursor または VS Code の拡張機能から DevContainer をインストールする．
 
 ---
 
 ## AI Agent の導入
 
-Claude Code
+どれか好きなのをインストールすれば良い．基本的に有料プランを前提とするので無料版に関しては説明しない．20ドルプランがあれば十分である．
 
-OpenAI Codex
+### Claude Code
 
-Cursor
+[https://code.claude.com/docs/en/overview](https://code.claude.com/docs/en/overview) を参考にすること
 
-OpenCode
+Linux/WSL/macOS
+
+```sh
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Windows
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+### OpenAI Codex
+
+[https://learn.chatgpt.com/docs/codex/cli#getting-started](https://learn.chatgpt.com/docs/codex/cli#getting-started) を参考にすること
+
+Linux/WSL/macOS
+
+```sh
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+```
+
+Windows
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+### OpenCode
+
+[https://opencode.ai/v2/docs](https://opencode.ai/v2/docs) を参考にすること
+
+Linux/WSL/macOS
+
+```sh
+curl -fsSL https://opencode.ai/v2/install | bash
+```
+
+Windows ユーザは `Download a standalone CLI binary for your platform.` からバイナリをダウンロードして使う
+
+### Cursor
+
+[https://cursor.com/download](https://cursor.com/download) からダウンロードしてインストールする．
+
+### VS Code
+
+[https://code.visualstudio.com/download](https://code.visualstudio.com/download) からダウンロードしてインストールする．
+
+GitHub Copilot を通して AI Agent を利用することができる．
