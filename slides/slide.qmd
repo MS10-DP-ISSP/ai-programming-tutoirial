@@ -665,4 +665,193 @@ Julia については文法を何も説明していないが，数値計算で�
 
 ---
 
+## 何ができるのか?(Rust版)
+
+自然言語を用いて AI に指示をし，プログラムを組むことができる．
+
+```text
+I want to create a Rust crate for simulating and visualizing elastic collisions of multiple balls in 2D space.
+```
+
+ここでは英語で書いたが，もちろん日本語でも可能．具体的な指示を与えるとスムーズにいく
+
+```text
+2D 空間で複数のボールの弾性衝突をシミュレートし、GIF で可視化する Rust クレートを作って。
+`./rust/` に作成。確認や設計の質問はせず、そのまま実装まで進めて。
+仕様に書かれていない細部は、下の「既定の判断」に従い、それ以外は自分で決めて最後に報告すること。
+
+## 物理
+
+- 円(半径・質量が異なる。質量 = π r²)、箱は 800×600(原点は左上、y は下向き)。
+- 玉同士は完全弾性衝突、壁は弾性反射。重力・摩擦・回転はなし。
+- アルゴリズム: 固定時間ステップ + 重なり検出 + 力積解決 + 位置補正。ペア判定は O(n²)。
+- 1 ステップの順序は「移動 → 玉同士 → 壁」(壁を最後にして、ステップ後は必ず箱の内側にする)。
+- 玉同士の判定: n を a→b の単位法線として、重なっていれば常に位置を分離し、
+  接近中((v_a − v_b)·n > 0)のときだけ力積 j = 2(v_a − v_b)·n / (1/m_a + 1/m_b) を適用
+  (v_a −= j/m_a·n、v_b += j/m_b·n)。
+- 壁: 位置を箱の内側へ戻し、その軸の速度を内向きに揃える(すでに内向きなら反転しない)。
+
+## 可視化
+
+- ウィンドウは不要。GIF のみ(ヘッドレス)。
+- `gif` クレート + 自前のソフトウェア描画(パレットインデックスのバッファに円を塗る。アンチエイリアスなし)。
+- パレットは黒の背景 + 16 色(ボール i は 1 + i % 16 番。16 色は互いに異なり、黒でない)。
+- 25 fps(遅延 4/100 秒)、1 フレーム 4 サブステップ(固定 dt = 1/100 秒)、縮尺 0.5(出力 400×300)、無限ループ。
+- 各フレームは「描画 → 4 サブステップ」の順(1 枚目は初期状態)。
+
+## CLI
+
+- `cargo run --release -- [--out collisions.gif] [--balls 30] [--seed 42] [--seconds 10]`
+- 引数解釈は手書き(`clap` は使わない)。不正な値はエラー(メッセージ + usage を stderr、終了コード 1)。
+  不正: 未知の引数、値の欠落(次が `--` で始まる場合も欠落)、`--balls` が 0 以下/整数でない、
+  `--seed` が非負整数でない、`--seconds` が非有限・0 以下、または 25 fps で 1 フレームも作れない長さ。
+- 終了時に出力先・フレーム数(= round(seconds × 25))・初期/最終の運動エネルギーを表示。
+
+## 構成
+
+- lib + bin。`Vec2` / `Ball` / `World` / `render` / `gif_export` / `animation` / `cli` / `main` に分ける。
+  物理(`Vec2` / `Ball` / `World`)は描画に依存させない。
+- 依存は `gif = "0.14"` と `rand = "0.8"`(0.8 に固定)のみ。
+- `World::new(balls) -> Result<World, Error>` は検証する(半径が正の有限値、位置・速度が有限、
+  箱の内側(接するのは可)、重なりなし)。
+- `World::random(n, seed) -> Result<World, Error>` は再現可能で、重ならない初期配置を返す(乱数は `StdRng`)。
+  半径 10〜30、速さ 20〜200、向きは一様。配置できなければ `PlacementFailed`。
+- 入力検証・CLI・I/O・GIF のエラーは `Error` 列挙型にまとめ、`Display` と `std::error::Error` を実装する。
+
+## 既定の判断(仕様の空白)
+
+- 位置分離は両玉に重なりの半分ずつ配分する。中心が一致する場合は x 軸を仮の法線とする。
+- GIF 書き出しはフレームのイテレータを受け取り、フレームなし・サイズ不一致は `Error`。
+- `animate` は世界を `&mut` で進め、`Vec<Frame>` を返す(最終エネルギーを呼び出し側が読めるように)。
+
+## 開発の進め方
+
+- t_wada 流 TDD(Red → Green → Refactor)。テストを先に書き、失敗を確認してから最小の実装で通す
+  (未実装 API によるコンパイルエラーも Red とみなしてよい)。
+- テストの順序は、Vec2 → Ball → World 検証 → 自由運動と壁 → 衝突(分離 → 力積 → 接近ガード)
+  → 運動量/エネルギー/random → 描画 → GIF → animate → CLI。
+- 長時間のプロパティテスト(`tests/`、複数シード×5000 ステップ、玉数も変える)で、
+  運動エネルギーの保存(相対誤差 1e-9 未満)と全ステップで箱の内側に留まることを確認。同シードで決定的なことも確認。
+- **コミットはしない**(`.gitignore` に `/target` だけ追加)。
+- 完了条件:
+  - `cargo test` 全通過、`cargo clippy --all-targets -- -D warnings` が警告なし。
+  - 既定設定で GIF を実際に生成し、寸法 400×300・250 フレーム・遅延 40ms・無限ループを確認し、
+    フレームを画像として見て円が描かれていることを確認(生成物はリポジトリに置かない)。
+  - 最後に、自分で決めた仕様外の判断を短く報告する。
+- スコープ外: ライブウィンドウ、HUD、アンチエイリアス、重力、マウス操作、空間分割。
+```
+
+---
+
+## 何ができるのか?(Julia版)
+
+自然言語を用いて AI に指示をし，プログラムを組むことができる．
+
+```text
+I want to create a Julia package for simulating and visualizing elastic collisions of multiple balls in 2D space
+```
+
+ここでは英語で書いたが，もちろん日本語でも可能．具体的な指示を与えるとスムーズにいく
+
+```text
+2D 空間で複数のボールの弾性衝突をシミュレーションし、可視化する Julia パッケージ
+ElasticCollisions を ./julia 以下に作ってください。質問はせず、以下の決定事項に従ってください。
+設計書は書かず、コミットもしないでください。開発は TDD で進めてください
+（先に失敗するテストを書き、失敗を確認してから実装する）。
+
+## 物理とシミュレーション
+- ボールは、位置・速度・半径（> 0）・質量（> 0）を持つ剛体の円盤です。
+  半径と質量はボールごとに異なってよいです。重力と摩擦はありません。
+- 容器は、反射壁を持つ矩形 [0, width] x [0, height] です。
+  型名は `Box` ではなく `Arena` にしてください。Makie が `Box` を export しているため、
+  `using ElasticCollisions, CairoMakie` すると名前が曖昧になります。
+- 時間発展はイベント駆動にします。壁・ボール対の衝突時刻を厳密に計算し、
+  全ボールを最も早いイベントまで進めて衝突を解き、これを繰り返します。
+  固定時間刻みは使いません。
+  - ボール対の衝突時刻: |dx + dv t| = r1 + r2 の小さい方の根。ボール同士が接近中
+    （dx・dv < 0）のときだけ対象にします。接触したまま離れていくペアが
+    再衝突しないようにするためです。
+  - ボール対の衝突: 中心を結ぶ線方向の速度成分を質量に応じて交換します。
+    接線方向の成分は変えません。
+  - 同時イベント（コーナーなど）は 1 つずつ順に処理します。
+  - イベントごとの候補探索は、素朴な O(n^2) で十分です。
+
+## 初期条件
+- ボールは `Ball((x, y), (vx, vy), radius, mass)` で明示的に指定できます。
+- `random_balls(n; arena, radius, speed, mass = 1.0, seed = nothing)` は、
+  重ならないボールを棄却サンプリングで生成します。向きはランダム、速さは指定値です。
+  `seed` で再現でき、乱数生成器は `Random.Xoshiro` を使います。
+  配置できなければ `ArgumentError` を投げます。
+- `World(balls, arena)` は、ボールがアリーナからはみ出す、またはボール同士が重なる場合に
+  `ArgumentError` を投げます。
+
+## API
+- export するもの: `Ball`, `Arena`, `World`, `Trajectory`, `kinetic_energy`, `simulate`,
+  `random_balls`, `save_gif`。
+- `simulate(world, T; frame_dt) -> Trajectory`。フィールドは `arena`, `times`,
+  `frames::Vector{Vector{Ball}}` です。フレームは `World` ではなく単なるボールの
+  ベクトルで持ちます。接触時の丸め誤差程度の重なりで、検証エラーが出ないようにするためです。
+  `T` が負、または `frame_dt` が正でない場合は `ArgumentError` を投げます。
+- 内部ヘルパー（`time_to_wall`, `time_to_pair`, `collide_pair`, `collide_wall`,
+  `advance`）は export しません。テストでは明示的に import します。
+
+## 可視化: CairoMakie による GIF 出力（パッケージ拡張）
+- CairoMakie は weakdep にし、`ext/` に拡張 `ElasticCollisionsCairoMakieExt` を置きます。
+  コアパッケージの依存は標準ライブラリの `Random` だけにします。
+- コアでは `function save_gif end` を定義し、拡張が
+  `save_gif(path, trajectory; fps = 30, size = (800, 500)) -> path` を実装します。
+- ボールは `Circle(center, radius)` の `poly!` で描きます（`markersize` 付きの
+  `scatter!` は使いません。データ座標の半径と一致しないためです）。
+  あわせて、アリーナの枠線、`DataAspect`、`t = ...` のタイトル、ボールごとの色を用意します。
+  録画は、Observable のフレーム番号で駆動する `record(...)` で行います。
+
+## 構成とツール（aa-jl スキルに従う）
+- カレントディレクトリに in-place レイアウトで作ります:
+  `Project.toml`, `src/`, `ext/`, `test/`, `README.md`, `.gitignore`
+  （Manifest.toml, test/Manifest.toml, *.gif を無視）。
+- UUID は `UUIDs.uuid4()` で生成します。すべての依存と weakdep に `[compat]` を付けます。
+  テスト環境が `[workspace]` と `[sources]` を使うため、`julia = "1.12"` にします。
+- テストは workspace 方式のテスト環境を使います（`test/Project.toml` に、パッケージ本体、
+  Test、CairoMakie、Aqua を入れる）。weakdeps や extensions を編集した後は
+  `Pkg.resolve()` を実行してください。実行しないと拡張が読み込まれません。
+
+## テスト（先に書く）
+1. 型: Ball / Arena / World の検証、`kinetic_energy`。
+2. イベント: 壁との衝突時刻と壁の名前、ボール対の衝突時刻（接近中、離れていく、
+   すれ違う、接触して接近中、接触して離れていく）、`advance`、壁での反射、
+   質量が等しい 2 球の正面衝突での速度交換、質量が異なる場合の運動量とエネルギーの保存。
+3. `simulate`: フレーム時刻、壁の間で跳ね返る 1 球、正面衝突、引数エラー。
+4. `random_balls`: 妥当性、再現性、`mass` キーワード、配置不可能なケース。
+5. 長時間の実行（質量の異なる 20 球、T = 200）: 運動エネルギーの保存（rtol 1e-9）、
+   全ボールがアリーナの内側にあること、重なりがないこと（許容誤差 1e-9）。
+6. `save_gif` が、GIF87a または GIF89a で始まり、フレームごとに 1 つ以上の
+   画像ブロックを持つファイルを書き出すこと。
+7. `Aqua.test_all(ElasticCollisions)`。
+最後に `julia --project -e 'using Pkg; Pkg.test()'` が通ることを確認してください。
+
+## エントリーポイントのスクリプト
+ユーザーが次の手順で GIF を得られるようにしてください:
+
+    cd app
+    julia --project main.jl
+
+CairoMakie は weakdep なので、ルートの環境からは読み込めません。そのため、スクリプトは
+`app/` に置き、専用の `Project.toml`（依存は、`[sources] path = ".."` 経由の
+ElasticCollisions と CairoMakie）を用意し、ルートの `[workspace]` に `"app"` を
+追加してください。`app/main.jl` は、`Arena(10, 6)`、ランダムな 15 球
+（半径 0.4、速さ 3、seed 7）を作り、30 fps で 10 秒間シミュレーションして
+`app/collisions.gif` を書き出します。実際に実行し、途中のフレーム（PIL などで抽出）を
+見て、ボールが動いていること、重なっていないこと、アリーナ内に収まっていることを
+確認してください。
+
+使い方（サンプルコード、クイックスタート、テストの実行方法）は README.md に書いてください。
+```
+
+---
+
+## できるもの
+
+Sonnet 5.5 (medium) による生成物．諸々込みで10分で作成できる．
+
+![](assets/collisions.gif)
 
