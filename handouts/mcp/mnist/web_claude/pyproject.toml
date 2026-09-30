@@ -1,0 +1,21 @@
+[project]
+name = "mnist-web-claude"
+version = "0.1.0"
+description = "MNIST viewer: Claude Haiku calls a self-contained Python MNIST MCP server"
+requires-python = ">=3.13"
+dependencies = [
+    "claude-agent-sdk>=0.2.159",
+    "fastmcp>=4.0.9",
+    "gradio>=6.28.0",
+    "numpy>=2.5.3",
+    "pillow>=12.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
