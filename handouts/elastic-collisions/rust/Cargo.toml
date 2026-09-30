@@ -1,0 +1,9 @@
+[package]
+name = "elastic-collisions"
+version = "0.1.0"
+edition = "2021"
+description = "2D elastic collision simulation rendered to GIF"
+
+[dependencies]
+gif = "0.14"
+rand = "0.8"

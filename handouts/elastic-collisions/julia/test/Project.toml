@@ -1,0 +1,14 @@
+[deps]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+ElasticCollisions = "2829bbb3-61a3-4e2c-bc7e-d6d475e11d75"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+ElasticCollisions = {path = ".."}
+
+[compat]
+Aqua = "0.8"
+CairoMakie = "0.15"
+Test = "1"
+julia = "1.12"
