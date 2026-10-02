@@ -311,9 +311,9 @@ $ docker run --rm hello-world
 
 ### Windows ユーザ向けの注意事項
 
-Docker Desktop を開く
-Settings にいく（Ctrl＋，）でジャンプできる
-Resource にいく．下記のようにチェックを入れる．
+1. Docker Desktop を開く
+1. Settings にいく（Ctrl＋，）でジャンプできる
+1. Resource にいく．下記のようにチェックを入れる．
 
 ![Docker Desktop Settings](https://static.zenn.studio/user-upload/825112ed4572-20261001.png)
 
