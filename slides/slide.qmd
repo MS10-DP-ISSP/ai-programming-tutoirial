@@ -1044,6 +1044,7 @@ $ uv run skill-scanner scan-all <path/to/skills> # スキルをスキャン
 
 - 状況に応じてエージェントが自動的にスキルを使用する
 - Claude Code, OpenCode では `/<skill-name>` のように明示的に呼び出すことができる．
+- Codex では `$<skill-name>` のように明示的に呼び出すことができる．
 - "<skill-name> を使って XXX を行ってください" のように指示を出してもよい．
 
 ---
