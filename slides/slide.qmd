@@ -310,7 +310,7 @@ gitGraph
   - GitHub Actions, GitLab CI/CD
   - クリーンな環境でビルドが通るか・テストが通るか
   - ドキュメントを Web ページに公開
-  - `creates.io` や `PyPI` に登録
+  - `crates.io` や `PyPI` に登録
 
 ---
 
