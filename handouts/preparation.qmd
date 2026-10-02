@@ -19,8 +19,10 @@ AI を用いたコーディングをする以前に，環境構築をする必�
 - macOS ユーザは [Homebrew](https://brew.sh/) を使用する.
 - Windows ユーザは [Winget](https://learn.microsoft.com/ja-jp/windows/package-manager/winget/) を使用する.
   - Windows 11 であれば PowerShell を開けば `winget` が使える.
+  - `wt` で Windows Terminal を開けば PowerShell が使える.
 - Nix のようなパッケージマネージャを知っている人はこの講義の対象者ではないので勝手に環境構築をして遊ぶこと．
 - すでに環境構築ができている方は読み流してよい．あくまでも参考程度に読んでほしい．
+- Windows 環境で開発環境を整えるのは茨の道であるので，可能であれば Linux/WSL を使用すること．
 
 ---
 
@@ -37,6 +39,8 @@ PC 自体を再起動してから Ubuntu-24.04 をインストールする．
 ---
 
 ## Git のインストール
+
+バージョン管理システムである Git をインストールする．コマンドは `git`. なお，コミットメッセージを手動で書いたり，ファイルの行単位でコミットの操作を行う場合には `tig` を使用すると便利である．
 
 Linux/WSL
 
@@ -56,6 +60,10 @@ Windows
 winget install --id Git.Git --source winget
 ```
 
+Windows ユーザは上記のコマンドで自動的に `tig` もインストールされる．
+
+コミットする際には誰が行ったかを記録するメタデータを設定する必要がある．そのために名前とメールアドレスを設定する必要がある．
+
 ```sh
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
@@ -65,7 +73,7 @@ git config --global user.email "your.email@example.com"
 
 ## GitHub CLI `gh` のインストール
 
-https://cli.github.com/ の案内に従う．
+Git で管理されているリポジトリをホストするサービスとして GitHub がある．GitHub ではリポジトリを管理するための CLI が提供されている．コマンドは `gh`. インストール方法は https://cli.github.com/ の案内に従う．
 
 Linux/WSL
 
@@ -97,11 +105,13 @@ winget install -e --id GitHub.cli --source winget
 
 これで，GitHub のサービスを CLI から利用することができる．
 
+GitHub のセキュリティ向上のために二要素認証を設定するのが望ましい．近年はパスキーを使う方法もサポートされている．
+
 ---
 
 ## Python のインストール
 
-[uv](https://docs.astral.sh/uv/) を使用する．
+MCPサーバを体験するために Python をインストールする．多くの OS ではデフォルトで Python がインストールされているが，`pip install ...` のようにナイーブに実行するとシステム環境用の Python 環境を汚してしまう恐れがある．そこで Python の仮想環境を作成するために [uv](https://docs.astral.sh/uv/) を使用する．
 
 Linux/WSL
 
@@ -123,6 +133,8 @@ Windows
 winget install --id Astral-sh.uv --source winget
 ```
 
+下記のように使用することができる．
+
 ```sh
 $ mkdir example
 $ cd example
@@ -135,7 +147,7 @@ $ uv run <your-script.py>
 
 ## Julia のインストール
 
-https://julialang.org/downloads/ の案内に従う．
+Julia は高性能な数値計算を行うための言語である．インストール方法は https://julialang.org/downloads/ の案内に従う．
 
 Linux/WSL/macOS
 
@@ -148,6 +160,17 @@ Windows
 ```powershell
 PS> winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore
 ```
+
+下記のように使用することができる．
+
+```sh
+$ julia -e 'using Pkg; Pkg.generate("MyPkg.jl")'
+$ cd MyPkg.jl
+$ julia --project -e 'using MyPkg; println(MyPkg.hello("Julia"))'
+Hello, Julia
+```
+
+なお `export JULIA_PROJECT=@.` を設定すると `--project` オプションを省略することができる．
 
 ## Rust のインストール
 
@@ -192,13 +215,16 @@ cargo run --release
 Hello, world!
 ```
 
+`src/main.rs` を編集することでコンパイルして実行することができる．
+
 ---
 
 ## Node.js のインストール
 
-NodeJS は JavaScript の実行環境であり，npm を使用することで JavaScript のパッケージを管理することができる．
+NodeJS は JavaScript の実行環境であり，`npm` を使用することで JavaScript のパッケージを管理することができる．
+様々なツールは `npm` 通してインストールすることを要請されることもあるので存在ぐらいは覚えておくとよい．
 
-https://nodejs.org/ja/download/ の案内に従う．
+インストール方法は https://nodejs.org/ja/download/ の案内に従う．
 
 Linux/WSL/macOS
 
@@ -230,6 +256,13 @@ PS> npm -v
 
 ## その他ベンチコマンドのインストール
 
+これはこのページを書いた人の趣味であり，必須ではない．CPUの使用率を確認する際は `htop`, `btm`, `macmon` を使用するとよい．
+`macmon` は macOS 専用のツールであり, GPU 使用率を監視するために便利である．
+
+`rg` は ripgrep の略であり，ファイル内を検索するためのツールである．`grep` の代わりとして使われる．Agent は `rg` を使うことが多いので入れておくとよい．
+
+`tmux` はターミナルマルチプレクサの役割を果たす． SSH 接続先のセッション管理に便利である．
+
 Linux/WSL/macOS
 
 ```sh
@@ -239,7 +272,7 @@ sudo apt-get install tmux htop ripgrep
 macOS
 
 ```sh
-brew install tmux htop rg
+brew install tmux htop rg macmon
 ```
 
 Windows
@@ -270,26 +303,53 @@ OS に応じてインストールすること:
 - [Install Docker Engine on Linux(Ubuntu)](https://docs.docker.com/engine/install/ubuntu/)
 - [Install Docker Desktop on Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
 
-
 動作確認は下記のコマンドでできる:
 
 ```sh
 $ docker run --rm hello-world
 ```
 
+### Windows ユーザ向けの注意事項
+
+Docker Desktop を開く
+Settings にいく（Ctrl＋，）でジャンプできる
+Resource にいく．下記のようにチェックを入れる．
+
+![Docker Desktop Settings](https://static.zenn.studio/user-upload/825112ed4572-20261001.png)
+
 ---
 
-## DevContainer のインストール
+## Dev Container のインストール
+
+Dev Container は Docker コンテナを使って環境を構築するためのツールである．`.devcontainer/devcontainer.json` を用意することで環境を構築することができる．本講義では `handouts/devcontainer` ディレクトリ以下にある環境をアクティベートする際に使用する．
+
+Cursor または VS Code の拡張機能から Dev Container をインストールする．
+
+https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
+
+---
+
+### CLI 版もある (Optional)
 
 [https://code.visualstudio.com/docs/devcontainers/devcontainer-cli](https://code.visualstudio.com/docs/devcontainers/devcontainer-cli) を参考にすること．CLI は `npm` を使用してインストールする．
 
-Linux/WSL/macOS/Windows
+Linux/WSL/macOS
+
+```sh
+$ curl -fsSL https://raw.githubusercontent.com/devcontainers/cli/main/scripts/install.sh | sh
+```
+
+PATH 環境変数を次のように編集する
+
+```sh
+export PATH="$HOME/.devcontainers/bin:$PATH"
+```
+
+Windows ユーザは `npm` を使用してインストールする．
 
 ```sh
 $ npm install -g @devcontainers/cli
 ```
-
-または Cursor または VS Code の拡張機能から DevContainer をインストールする．
 
 ---
 
@@ -350,3 +410,8 @@ Windows ユーザは `Download a standalone CLI binary for your platform.` か�
 [https://code.visualstudio.com/download](https://code.visualstudio.com/download) からダウンロードしてインストールする．
 
 GitHub Copilot を通して AI Agent を利用することができる．
+
+大学生や大学の教職員は以下の案内に従い，GitHub Copilot を有効にすることができる．
+
+- https://docs.github.com/ja/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students
+- https://docs.github.com/ja/education/about-github-education/github-education-for-teachers/about-github-education-for-teachers
