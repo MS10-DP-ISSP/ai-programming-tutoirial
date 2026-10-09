@@ -9,6 +9,7 @@ title: "AI programming tutorial"
 ## Handouts
 
 - [Slide](slides/slide.qmd)
+	- [Appendix](settings_json.qmd)
 - [Preparation](handouts/preparation.qmd)
 
 ## Appendix

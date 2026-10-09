@@ -1,0 +1,98 @@
+---
+format:
+  revealjs:
+    theme: "black"
+    css: "../styles/style.css"
+    embed-resources: true
+    slide-number: true
+    show-notes: separate-page
+    mermaid:
+      theme: default
+    gfm:
+    mermaid-format: png
+---
+
+## AI プログラミング入門(`settings.json`)
+
+![](https://ms10ds.nifs.ac.jp/wp-content/uploads/2026/09/logo.png)
+
+講師: 寺崎敏志 (Satoshi Terasaki)
+
+## `settings.json` について
+
+- Claude の設定を司るJSONフォーマットファイル
+- `~/.claude/settings.json` ユーザの任意のプロジェクトで適用される
+- `path/to/project/.claude/settings.json` path/to/project で適用される設定
+  - 共同開発でのルールを仕込める．
+- `path/to/project/.claude/settings.local.json`
+  - 特定のプロジェクトで，自分だけのルールを仕込める
+
+---
+
+## `settings.json` の便利な機能
+
+- `~/.claude/settings.json` に書いておくと，Claude が作業を完了した際に音を鳴らしてくれる (macOS 限定).
+
+```json
+ "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Glass.aiff"
+          }
+        ]
+      }
+    ]
+  }
+```
+
+---
+
+## `settings.json` の便利な機能
+
+`statusLine` を設定すると Claude の画面の下側に色々な情報を入れることができる．
+
+```json
+  "statusLine": {
+    "type": "command",
+    "command": "bunx -y ccstatusline@latest"
+  },
+```
+
+参考: [Claude Codeのステータスラインを秒でおしゃれに――ccstatuslineの使い方](https://eiji.page/blog/ccstatusline-intro/) by eetann/えいじ
+
+---
+
+## `settings.json` の機能
+
+特定のコマンドの実行・ファイルの読み書き・ネットワークのアクセスを制御することができる．
+
+```json
+"permissions": {
+  "allow": [
+    "Bash(yarn test:*)"
+  ],
+  "deny": [
+    "Read(./.env)",
+    "Read(./.env.*)",
+    "Read(./secrets/**)",
+    "Write(./production.config.*)",
+    "Bash(git config :*)",
+    "Bash(brew install :*)",
+    "Bash(rm -rf /*)",
+    "Bash(gh repo delete:*)"
+  ],
+},
+```
+
+---
+
+## Claude Code とセキュリティ対策関係に有用な資料
+
+- [公式ドキュメント: 権限を設定する](https://code.claude.com/docs/ja/permissions)
+- [公式ドキュメント: サンドボックス環境を選択する](https://code.claude.com/docs/ja/sandbox-environments)
+- [Claude Code】非エンジニアでもわかるセキュリティ設定完全網羅版](https://zenn.dev/solvio/articles/27c06e4802aa45) by [okawa2929](https://zenn.dev/kazuki2929)
+- [Claude Code を安全に使おう【社内勉強会スライド】](https://dev.classmethod.jp/articles/claude-code-security-basics/) by [川原征大](https://dev.classmethod.jp/author/kawahara-masahiro/)
+- [野良 Agent Skills (Claude Code Skills) に潜むリスク](https://dev.classmethod.jp/articles/wild-claude-code-skills/) by [かわい](https://dev.classmethod.jp/author/kawaken/)
