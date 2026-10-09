@@ -525,6 +525,34 @@
     "text": "ODAT-SE × Claude Code: カスタム順問題ソルバー\n公式チュートリアルでは Booth 関数の最適化に ODAT-SE 本体の書き換えが必要．\n→ そんなのは嫌だ!!! と考える人のために\n→ カスタム Solver のアプローチを Claude Code にお願いする:\n# これはプロンプトです\n\nhttps://.../tutorial/solver_simple.html によると，Booth関数の最適化を行うために\nODAT-SE 本体のコードを書き直さなければいけない．そんなのは嫌だ．\n\nhttps://.../customize/solver.html にあるようにカスタム Solver による方法の\nアプローチを利用したい．Booth 関数を試すサンプルとして提供したい．\nこれで booth.py が生成される．可視化も同様に:\n$ uv run python scripts/plot_booth.py --xcol 1 --ycol 2 --skip 1 \\\n    --output res_booth.png output_booth/0/SimplexData.txt\nドキュメントの URL を渡して「やりたいこと・やりたくないこと」を書くだけでよい．"
   },
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "AI programming tutorial",
+    "section": "",
+    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+  },
+  {
+    "objectID": "index.html#description",
+    "href": "index.html#description",
+    "title": "AI programming tutorial",
+    "section": "",
+    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+  },
+  {
+    "objectID": "index.html#handouts",
+    "href": "index.html#handouts",
+    "title": "AI programming tutorial",
+    "section": "Handouts",
+    "text": "Handouts\n\nSlide\n\nAppendix\n\nPreparation"
+  },
+  {
+    "objectID": "index.html#appendix",
+    "href": "index.html#appendix",
+    "title": "AI programming tutorial",
+    "section": "Appendix",
+    "text": "Appendix\nThis website is built with Quarto. This website may be used freely for educational and research purposes.\n\nHow to view the website locally\nDownload Quarto from here to use the quarto command. Then, just run:\n$ cd path/to/this/directory\n$ quarto preview"
+  },
+  {
     "objectID": "handouts/preparation.html",
     "href": "handouts/preparation.html",
     "title": "Introduction to Coding Agents",
@@ -616,31 +644,45 @@
     "text": "AI Agent の導入\nどれか好きなのをインストールすれば良い．基本的に有料プランを前提とするので無料版に関しては説明しない．20ドルプランがあれば十分である．\n\nClaude Code\nhttps://code.claude.com/docs/en/overview を参考にすること\nLinux/WSL/macOS\ncurl -fsSL https://claude.ai/install.sh | bash\nWindows\nirm https://claude.ai/install.ps1 | iex\n\n\nOpenAI Codex\nhttps://learn.chatgpt.com/docs/codex/cli#getting-started を参考にすること\nLinux/WSL/macOS\ncurl -fsSL https://chatgpt.com/codex/install.sh | sh\nWindows\npowershell -ExecutionPolicy ByPass -c \"irm https://chatgpt.com/codex/install.ps1 | iex\"\n\n\nOpenCode\nhttps://opencode.ai/v2/docs を参考にすること\nLinux/WSL/macOS\ncurl -fsSL https://opencode.ai/v2/install | bash\nWindows ユーザは Download a standalone CLI binary for your platform. からバイナリをダウンロードして使う\n\n\nCursor\nhttps://cursor.com/download からダウンロードしてインストールする．\n\n\nVS Code\nhttps://code.visualstudio.com/download からダウンロードしてインストールする．\nGitHub Copilot を通して AI Agent を利用することができる．\n大学生や大学の教職員は以下の案内に従い，GitHub Copilot を有効にすることができる．\n\nhttps://docs.github.com/ja/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students\nhttps://docs.github.com/ja/education/about-github-education/github-education-for-teachers/about-github-education-for-teachers"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Claude Code Getting started by SatoshiTerasaki",
-    "section": "",
-    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+    "objectID": "slides/settings_json.html#ai-プログラミング入門settings.json",
+    "href": "slides/settings_json.html#ai-プログラミング入門settings.json",
+    "title": "Introduction to Coding Agents",
+    "section": "AI プログラミング入門(settings.json)",
+    "text": "AI プログラミング入門(settings.json)\n\n講師: 寺崎敏志 (Satoshi Terasaki)"
   },
   {
-    "objectID": "index.html#description",
-    "href": "index.html#description",
-    "title": "Claude Code Getting started by SatoshiTerasaki",
-    "section": "",
-    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+    "objectID": "slides/settings_json.html#settings.json-について",
+    "href": "slides/settings_json.html#settings.json-について",
+    "title": "Introduction to Coding Agents",
+    "section": "settings.json について",
+    "text": "settings.json について\n\nClaude の設定を司るJSONフォーマットファイル\n~/.claude/settings.json ユーザの任意のプロジェクトで適用される\npath/to/project/.claude/settings.json path/to/project で適用される設定\n\n共同開発でのルールを仕込める．\n\npath/to/project/.claude/settings.local.json\n\n特定のプロジェクトで，自分だけのルールを仕込める"
   },
   {
-    "objectID": "index.html#handouts",
-    "href": "index.html#handouts",
-    "title": "Claude Code Getting started by SatoshiTerasaki",
-    "section": "Handouts",
-    "text": "Handouts\n\nSlide\nPreparation"
+    "objectID": "slides/settings_json.html#settings.json-の便利な機能",
+    "href": "slides/settings_json.html#settings.json-の便利な機能",
+    "title": "Introduction to Coding Agents",
+    "section": "settings.json の便利な機能",
+    "text": "settings.json の便利な機能\n\n~/.claude/settings.json に書いておくと，Claude が作業を完了した際に音を鳴らしてくれる (macOS 限定).\n\n \"hooks\": {\n    \"Stop\": [\n      {\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"afplay /System/Library/Sounds/Glass.aiff\"\n          }\n        ]\n      }\n    ]\n  }"
   },
   {
-    "objectID": "index.html#appendix",
-    "href": "index.html#appendix",
-    "title": "Claude Code Getting started by SatoshiTerasaki",
-    "section": "Appendix",
-    "text": "Appendix\nThis website is built with Quarto. This website may be used freely for educational and research purposes.\n\nHow to view the website locally\nDownload Quarto from here to use the quarto command. Then, just run:\n$ cd path/to/this/directory\n$ quarto preview"
+    "objectID": "slides/settings_json.html#settings.json-の便利な機能-1",
+    "href": "slides/settings_json.html#settings.json-の便利な機能-1",
+    "title": "Introduction to Coding Agents",
+    "section": "settings.json の便利な機能",
+    "text": "settings.json の便利な機能\nstatusLine を設定すると Claude の画面の下側に色々な情報を入れることができる．\n  \"statusLine\": {\n    \"type\": \"command\",\n    \"command\": \"bunx -y ccstatusline@latest\"\n  },\n参考: Claude Codeのステータスラインを秒でおしゃれに――ccstatuslineの使い方 by eetann/えいじ"
+  },
+  {
+    "objectID": "slides/settings_json.html#settings.json-の機能",
+    "href": "slides/settings_json.html#settings.json-の機能",
+    "title": "Introduction to Coding Agents",
+    "section": "settings.json の機能",
+    "text": "settings.json の機能\n特定のコマンドの実行・ファイルの読み書き・ネットワークのアクセスを制御することができる．\n\"permissions\": {\n  \"allow\": [\n    \"Bash(yarn test:*)\"\n  ],\n  \"deny\": [\n    \"Read(./.env)\",\n    \"Read(./.env.*)\",\n    \"Read(./secrets/**)\",\n    \"Write(./production.config.*)\",\n    \"Bash(git config :*)\",\n    \"Bash(brew install :*)\",\n    \"Bash(rm -rf /*)\",\n    \"Bash(gh repo delete:*)\"\n  ],\n},"
+  },
+  {
+    "objectID": "slides/settings_json.html#claude-code-とセキュリティ対策関係に有用な資料",
+    "href": "slides/settings_json.html#claude-code-とセキュリティ対策関係に有用な資料",
+    "title": "Introduction to Coding Agents",
+    "section": "Claude Code とセキュリティ対策関係に有用な資料",
+    "text": "Claude Code とセキュリティ対策関係に有用な資料\n\n公式ドキュメント: 権限を設定する\n公式ドキュメント: サンドボックス環境を選択する\nClaude Code】非エンジニアでもわかるセキュリティ設定完全網羅版 by okawa2929\nClaude Code を安全に使おう【社内勉強会スライド】 by 川原征大\n野良 Agent Skills (Claude Code Skills) に潜むリスク by かわい"
   }
 ]
