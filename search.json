@@ -1,0 +1,646 @@
+[
+  {
+    "objectID": "slides/slide.html#ai-プログラミング入門",
+    "href": "slides/slide.html#ai-プログラミング入門",
+    "title": "Introduction to Coding Agents",
+    "section": "AI プログラミング入門",
+    "text": "AI プログラミング入門\n\n講師: 寺崎敏志 (Satoshi Terasaki)"
+  },
+  {
+    "objectID": "slides/slide.html#はじめに",
+    "href": "slides/slide.html#はじめに",
+    "title": "Introduction to Coding Agents",
+    "section": "はじめに",
+    "text": "はじめに\n\n大規模言語モデル(LLM, Large Language Model)の登場で，文章要約，質疑応答，翻訳などの自然言語処理タスクをこなすことができるようになった\nOpenAI のような AI とチャットできるサービスがリリースされ一般の人が気軽に利用できるようになった\nコーディングに特化するエージェント e.g., Codex/Claude Code/Gemini/OpenCode etc… が登場しソフトウェア開発のあり方が大きく変わってきている\n本講義では AI エージェントを使い，ソフトウェア開発をするための事柄を復習しつつ，AI を使ったソフトウェア開発の方法を案内する"
+  },
+  {
+    "objectID": "slides/slide.html#自己紹介",
+    "href": "slides/slide.html#自己紹介",
+    "title": "Introduction to Coding Agents",
+    "section": "自己紹介",
+    "text": "自己紹介\n\n名前: 寺崎敏志 (Satoshi Terasaki)\n生まれは富山県\n所属: 物性研究所 川島G にて特任研究員\n\n2026年5月から着任\nそれまではソフトウェア関連で会社員・個人事業主で活動\n\nC/C++/Python/Julia/Fortran/JavaScript/数学\n\n個人開発・兼業では AI エジェントを活用し Rust/Julia 周りのソフトウェア整備をしている"
+  },
+  {
+    "objectID": "slides/slide.html#個人の活動で行っていること-pythonrngs.jl",
+    "href": "slides/slide.html#個人の活動で行っていること-pythonrngs.jl",
+    "title": "Introduction to Coding Agents",
+    "section": "個人の活動で行っていること: PythonRNGs.jl",
+    "text": "個人の活動で行っていること: PythonRNGs.jl\nPython の乱数生成器を Julia から呼び出すためのパッケージ．\nusing PythonRNGs\nusing Random: Random\n\n# random.random\nexample1(seed) = rand(PythonRandom(seed), 2, 3)\n# np.random.random\nexample2(seed) = rand(NumPyRandom(seed), 2, 3)\n# np.random.default_rng(42)\nexample3(seed) = rand(NumPyDefaultRNG(seed), 2, 3)"
+  },
+  {
+    "objectID": "slides/slide.html#個人の活動で行っていること-rustcall.jl",
+    "href": "slides/slide.html#個人の活動で行っていること-rustcall.jl",
+    "title": "Introduction to Coding Agents",
+    "section": "個人の活動で行っていること: RustCall.jl",
+    "text": "個人の活動で行っていること: RustCall.jl\nRust の資源を Julia から呼び出すためのパッケージ．\nusing RustCall\n\nrust\"\"\"\n#[julia]\nfn add(a: i32, b: i32) -&gt; i32 {\n    a + b\n}\n\"\"\"\n\n# Call directly - wrapper is auto-generated\nadd(10, 20)  # =&gt; 30"
+  },
+  {
+    "objectID": "slides/slide.html#個人の活動で行っていること-quantumenvelopingalgebras.jl",
+    "href": "slides/slide.html#個人の活動で行っていること-quantumenvelopingalgebras.jl",
+    "title": "Introduction to Coding Agents",
+    "section": "個人の活動で行っていること: QuantumEnvelopingAlgebras.jl",
+    "text": "個人の活動で行っていること: QuantumEnvelopingAlgebras.jl\n量子群の計算をするためのパッケージ．\nimport AbstractAlgebra as AA\nusing QuantumEnvelopingAlgebras\n\nR, q = AA.rational_function_field(AA.QQ, :q)\nU, (E, F, K, Ki) = uqsl2(R, q)\n\n@assert E*F - F*E == (K - Ki)/(q - inv(q))\n@assert K*Ki == one(U)"
+  },
+  {
+    "objectID": "slides/slide.html#実は",
+    "href": "slides/slide.html#実は",
+    "title": "Introduction to Coding Agents",
+    "section": "実は",
+    "text": "実は\n\nこれらの紹介したソフトウェアは AI を活用しています\n\n私が担当した 9 割の実装は AI によって生成したものです\nAI のおかげで多くのソフトウェアを開発することができるようになりました\n\n自分は事前コンパイルするタイプのプログラミング言語は苦手\n\nAI が代わりに書いてくれるおかげでより多くのソフトウェアを開発することができるようになりました\nRust, Swift, TypeScript などのプログラミング言語を使ったソフトウェア開発も行っています"
+  },
+  {
+    "objectID": "slides/slide.html#ai-driven-development",
+    "href": "slides/slide.html#ai-driven-development",
+    "title": "Introduction to Coding Agents",
+    "section": "AI Driven Development",
+    "text": "AI Driven Development\n\n人間は自然言語で作りたいものを指示し AI Agent はソースコードを生成・コマンドの実行を行う\n\nAI を用いて開発を効率よく進める開発手法を AI-driven 開発と呼ぶ"
+  },
+  {
+    "objectID": "slides/slide.html#従来のソフトウェア開発を振り返る",
+    "href": "slides/slide.html#従来のソフトウェア開発を振り返る",
+    "title": "Introduction to Coding Agents",
+    "section": "従来のソフトウェア開発を振り返る",
+    "text": "従来のソフトウェア開発を振り返る\n\n\n\nアイデアを考える・仕様を定める\nコードを書く\n\nアルゴリズムの実装\n\nデバッグを行う\n\nテストを書く\nドキュメントを書く\n\n必要に応じてリファクタリングを行う\n運用・メンテナンスを行う\n上記の繰り返しをする"
+  },
+  {
+    "objectID": "slides/slide.html#ところで",
+    "href": "slides/slide.html#ところで",
+    "title": "Introduction to Coding Agents",
+    "section": "ところで",
+    "text": "ところで\n\n\n\nアイデアを考える・仕様を定める\nコードを書く\n\nアルゴリズムの実装\n\nデバッグを行う\n\nテストを書く\nドキュメントを書く\n\n必要に応じてリファクタリングを行う\n運用・メンテナンスを行う\n上記の繰り返しをする\n\n\n\nあなたは全部真面目に取り組みましたか？\nbranch を作って PR 作って レビュー・マージを繰り返す共同開発を進めていましたか？\n常に効率の良い開発方法を考えていましたか？\n常に効率の良い開発環境を提供していますか？\n本当ですか？\n\n特に，テストを書くこと\nドキュメントを書くこと"
+  },
+  {
+    "objectID": "slides/slide.html#現実",
+    "href": "slides/slide.html#現実",
+    "title": "Introduction to Coding Agents",
+    "section": "現実",
+    "text": "現実\n\n\n\n\n\nソースコードはどこですか？\n\nどれが最新のコードですか？\nバージョン管理されてない!!!\ncode is available!, coming soon! (Not Found)\n\nドキュメントがない\n\n古い，間違っている\n\nなぜこの機能があるのか？\n\n誰が書いたの？\n\nテストがない\n\n変更したコードが正しく動くかがわからない．\n\nコンパイルができない\n\n実行時にエラーが起きる\n動くけれど変な値が出る"
+  },
+  {
+    "objectID": "slides/slide.html#再現性のあるソフトウェアを",
+    "href": "slides/slide.html#再現性のあるソフトウェアを",
+    "title": "Introduction to Coding Agents",
+    "section": "再現性のあるソフトウェアを！！！",
+    "text": "再現性のあるソフトウェアを！！！\n\n\n\n\n\n企業だろうと，研究所だろうと立場がどうあれ，ここにいる皆さんは広義のソフトウェア開発者です\n\n現代的な開発手法を取り入れることを努力するのは必須のスキルです\n人を動かす立場の人は快適な開発環境を整えることは必須の役割です\n\n再現性があり，安定して動作するソフトウェアを作ることが重要です\nAI を活用したソフトウェア開発は再現性のあるソフトウェアを作るための一つの解決策です\n\nその前に，現代的なソフトウェア開発をするための基盤を整える必要があります"
+  },
+  {
+    "objectID": "slides/slide.html#人間と機械",
+    "href": "slides/slide.html#人間と機械",
+    "title": "Introduction to Coding Agents",
+    "section": "人間と機械",
+    "text": "人間と機械\n\n人間は「創造」することができるが「疲れる」,「飽きる」,「固執する」，「知識を秘密にする」\n\n「疲れる」: git commit -m \"update\" git commit -m \"fix\" を使いまくる\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n「飽きる」: メンテナンスを止めてしまう\n「固執する」: 特定のプログラミング言語を使い続ける\n\n数十年の単位で固執するとパッケージマネージャを使うなど現代的な開発手法を取り入れることが困難な環境を生む\n\n「知識を秘密にする」: 知っていることを秘密にしてしまう\n\n秘伝のタレができてしまう"
+  },
+  {
+    "objectID": "slides/slide.html#人間と機械-1",
+    "href": "slides/slide.html#人間と機械-1",
+    "title": "Introduction to Coding Agents",
+    "section": "人間と機械",
+    "text": "人間と機械\n\n機械は「飽きない」,「疲れない」,「モデルが成長」, 「聞いたら教えてくれる」\n\nコードの差分から適切なコミット・プリクエストの概要を作成してくれる\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n様々な言語を使える．移植も得意\nその時代・要請に応じて変更が可能．現代的な言語にマイグレーションが可能\n(正しいかは別として)AI に質問すればなんでも答えてくれる"
+  },
+  {
+    "objectID": "slides/slide.html#人間は不要か",
+    "href": "slides/slide.html#人間は不要か",
+    "title": "Introduction to Coding Agents",
+    "section": "人間は不要か？",
+    "text": "人間は不要か？\n\n\n\nLLM は多くの知識を持っているが，研究者のように最先端の知識を持っているとは限らない．\n\n限られたリソースの中で何を実装するか，しないかは人間の能力に左右される．\n\nソフトウェアエンジニアはコーディングする時間から解放されるが次のような能力は必要になる：\n\nどのような技術をどの場面で使うか\n高品質なソフトウェアを作成・維持するためのアーキテクチャを考える\n意思決定をする上位の能力\nコーディング以外に研究者と議論するための最低限のドメイン知識も求められるようになる．"
+  },
+  {
+    "objectID": "slides/slide.html#現代的な開発手法への招待",
+    "href": "slides/slide.html#現代的な開発手法への招待",
+    "title": "Introduction to Coding Agents",
+    "section": "現代的な開発手法への招待",
+    "text": "現代的な開発手法への招待\n\nAI を活用したソフトウェア開発をする以前に環境を整えましょう\nバージョン管理をしましょう．\n\nGit/GitHub/GitLab などのエコシステムを活用しましょう\n\nIssue Driven Development をしましょう\n\n問題を定義し，それを解決するためのコードを書くことでソフトウェアを開発しましょう\n\nTDD(Test Driven Development) をしましょう\n\nテストを先に書き，テストが通るようにコードを書く\n\nCI(Continuous Integration)/CD(Continuous Deployment) パイプラインを構築しテスト・デプロイを自動化しましょう\n\nGitHub Actions, GitLab CI/CD\nクリーンな環境でビルドが通るか・テストが通るか\nドキュメントを Web ページに公開\ncrates.io や PyPI に登録"
+  },
+  {
+    "objectID": "slides/slide.html#現代的な開発手法への招待-1",
+    "href": "slides/slide.html#現代的な開発手法への招待-1",
+    "title": "Introduction to Coding Agents",
+    "section": "現代的な開発手法への招待",
+    "text": "現代的な開発手法への招待\n\nパッケージマネージャが付属している言語を使いましょう\n\n他の人が書いた便利な機能を取り込むことができる\n他の人から再利用がしやすい\n\n汎用的な部品を切り出し便利な機能を提供すると人類が喜びます\nあなたが作ったソフトウェアはそこで進化が止まりません．常に成長を続け，他者から使われる可能性を秘めています．\n他者とのコラボレーションが可能になる\n車輪の再発明を抑えることができる．\n1つのリポジトリに大規模，密結合になっているとメンテナンスが大変\n\n(経験上 AI 時代でも難しい)"
+  },
+  {
+    "objectID": "slides/slide.html#現代的プログラミング言語への招待",
+    "href": "slides/slide.html#現代的プログラミング言語への招待",
+    "title": "Introduction to Coding Agents",
+    "section": "現代的プログラミング言語への招待",
+    "text": "現代的プログラミング言語への招待\n\nJulia は高級な動的言語でありながら高速な実行が可能\n\n(科学技術計算の文脈で)既存のプログラミング言語のいいとこどりを目指した欲張りな言語\n添字が 1 始まり，多次元配列をサポート・column major\nccall, cfunction を用いることで C/Fortran のライブラリを呼び出すことができる\nPython のライブラリを呼び出すことができる\n普段 Fortran ユーザであれば試してみる価値はあり\n\n欠点:\n\n動的言語であるので実行時に Runtime Error が発生する可能性がある\n\n動的言語の宿命．JET.jl などの静的解析ツールを使う\n\n型不安定なコード, GC (ガベージコレクション) が頻発するケースではパフォーマンスが出にくい\n配列を動的に確保しメモリアロケーションが発生するケースではパフォーマンスが出にくい\n\nもちろん対策方法はある. AI に適切な指示を与えることで解決する"
+  },
+  {
+    "objectID": "slides/slide.html#現代的プログラミング言語への招待-1",
+    "href": "slides/slide.html#現代的プログラミング言語への招待-1",
+    "title": "Introduction to Coding Agents",
+    "section": "現代的プログラミング言語への招待",
+    "text": "現代的プログラミング言語への招待\n\nRust はシステムプログラミング言語として導入された言語，高速に動作\n\nコンパイルの時点で危険なコードを排除することができる．\n\n未初期化変数，型の不一致，配列の範囲外アクセスをコンパイルの時点で検出することができる\n\nデットコード(未使用のコード)の検出など静的解析が優秀\ncargo build で簡単にビルドを進めることができる．\n\nオレオレ CMakeLists.txt Makefile を書かなくても良い．\n\n普段 C/C++ ユーザであれば試してみる価値はあり\nCLI ツールを配布することができる．\n\n欠点:\n\nコンパイルに時間，コンパイル時に出る中間生成物の量によるストレージの圧迫\nsccache, kache を用いることでコンパイル時間を短縮することができる\n所有権の理解など，学習コストがかかる\n\nAI によるコード生成により開発体験が劇的に改善します"
+  },
+  {
+    "objectID": "slides/slide.html#関数の結果を代入せずに戻る",
+    "href": "slides/slide.html#関数の結果を代入せずに戻る",
+    "title": "Introduction to Coding Agents",
+    "section": "関数の結果を代入せずに戻る",
+    "text": "関数の結果を代入せずに戻る\n同符号なら return するが、関数結果には一度も代入しない\n\n\nprogram main\n  implicit none\n  print *, root(1.0, 2.0)\n  print *, root(1.0, -5.0)\ncontains\n  real function root(a, b)\n    real, intent(in) :: a, b\n    if (a * b &gt; 0.0) return\n    root = 0.5*(a + b)\n  end function root\nend program main\n$ gfortran -O0 repro.f90 && ./a.out\n   1.40129846E-45\n  -2.00000000\n\nfn root(a: f64, b: f64) -&gt; f64 {\n    let result: f64;\n    if a * b &gt; 0.0 {\n        return result;\n    }\n    0.5 * (a + b)\n}\n\nfn main() {\n    println!(\"{}\", root(1.0, 2.0));\n}\n$ rustc repro.rs\nerror[E0381]: used binding `result` isn't initialized"
+  },
+  {
+    "objectID": "slides/slide.html#範囲外アクセス",
+    "href": "slides/slide.html#範囲外アクセス",
+    "title": "Introduction to Coding Agents",
+    "section": "範囲外アクセス",
+    "text": "範囲外アクセス\n\n-O3 フラグでコンパイルすると a だけではなく b の方にも値を書いてしまう．(意図しない書き込み)\nRust では panic を発生し処理を止める．\n\n\n\nprogram main\n  implicit none\n  real :: a(4)\n  real :: b(4) ! Uninitialized array\n  integer :: i, n\n  n = 7\n  do i = 1, n\n     a(i) = real(i)\n  end do\n  print *, a\n  print *, b\nend program main\n$ gfortran -O3 repro.f90 && ./a.out\n   1.00000000       2.00000000       3.00000000       4.00000000\n   5.00000000       6.00000000       7.00000000       0.00000000\n\nfn main() {\n    let mut a = [0.0f64; 4];\n    let n = 6;\n    for i in 1..=n {\n        a[i - 1] = i as f64;\n    }\n    println!(\"{a:?}\");\n}\n$ rustc -C opt-level=3 repro.rs && ./repro\nthread 'main' (5500909) panicked at repro.rs:5:9:\nindex out of bounds: the len is 4 but the index is 4\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+  },
+  {
+    "objectID": "slides/slide.html#代入していない変数を式に使う",
+    "href": "slides/slide.html#代入していない変数を式に使う",
+    "title": "Introduction to Coding Agents",
+    "section": "代入していない変数を式に使う",
+    "text": "代入していない変数を式に使う\n\nFortran だとコンパイルも通るし，実行もされてしまう．\nRust は初期化していない束縛を読めず、コンパイルできない。\n\n\n\nprogram main\n  implicit none\n  real :: omega, factor\n  factor = 1.0/omega**2\n  print *, factor\nend program main\n$ gfortran repro.f90 && ./a.out\n         Infinity\n\nfn main() {\n    let omega: f64;\n    let factor = 1.0 / omega.powi(2);\n    println!(\"{factor}\");\n}\n$ rustc repro.rs\nerror[E0381]: used binding `omega` isn't initialized\n --&gt; repro.rs:3:24\n  |\n2 |     let omega: f64;\n  |         ----- binding declared here but left uninitialized\n3 |     let factor = 1.0 / omega.powi(2);\n  |                        ^^^^^ `omega` used here but it isn't initialized"
+  },
+  {
+    "objectID": "slides/slide.html#ローカル変数が外側の値を隠す",
+    "href": "slides/slide.html#ローカル変数が外側の値を隠す",
+    "title": "Introduction to Coding Agents",
+    "section": "ローカル変数が外側の値を隠す",
+    "text": "ローカル変数が外側の値を隠す\n\nローカルの omega がモジュールの omega を隠す. 外側には 2.0 があるが、サブルーチン内の同名の変数には一度も代入しない.\n\n\n\nmodule m\n  implicit none\n  real :: omega = 2.0\ncontains\n  subroutine setup()\n    real :: omega\n    print *, omega\n  end subroutine setup\nend module m\n\nprogram main\n  use m\n  call setup()\nend program main\n$ gfortran repro.f90 && ./a.out\n   2.80259693E-45\n\nfn setup(_omega_outer: f64) -&gt; f64 {\n    let omega: f64;\n    omega\n}\n\nfn main() {\n    println!(\"{}\", setup(2.0));\n}\n$ rustc repro.rs\nrustc repro.rs\nerror[E0381]: used binding `omega` isn't initialized\n --&gt; repro.rs:3:5\n  |\n2 |     let omega: f64;\n  |         ----- binding declared here but left uninitialized\n3 |     omega\n  |     ^^^^^ `omega` used here but it isn't initialized"
+  },
+  {
+    "objectID": "slides/slide.html#まとめ",
+    "href": "slides/slide.html#まとめ",
+    "title": "Introduction to Coding Agents",
+    "section": "まとめ",
+    "text": "まとめ\nこのように Fortran (人手) で書かれたコードのバグを Rust ではコンパイラの時点で検出することができます． また，範囲外アクセスについてはパニックによって実行時エラーが発生し，意図しない数値計算を止めることができます．"
+  },
+  {
+    "objectID": "slides/slide.html#julia-に関して",
+    "href": "slides/slide.html#julia-に関して",
+    "title": "Introduction to Coding Agents",
+    "section": "Julia に関して",
+    "text": "Julia に関して\n\nJulia は JIT コンパイルで動作する\n動的言語なので，Rust ほど厳格ではないが，高速な実行が可能な言語\nREPL, IJulia.jl, Pluto.jl などのインタラクティブな環境を提供している\nパッケージマネージャが付属しているので，他の人が書いた便利な機能を取り込むことができる\n\nメンテナは科学技術計算周りのコミュニティが多いので，科学技術計算で使われている機能が利用できる\n\n実行時することでエラーを見つけることになる（動的言語の宿命）\n\nとはいえ，未定義変数に対しては UndefVarError, 範囲外アクセスに対しては BoundsError などでエラー種類を見つけやすくなる\nJET.jl を使用することで静的解析を行うことができるが，まだまだ発展途上です\nスタックトレースでどの箇所でエラーが起きているか特定することができる\n\nどれくらい速度が出るかは次のページで"
+  },
+  {
+    "objectID": "slides/slide.html#mvnormal-のサンプリング速度比較",
+    "href": "slides/slide.html#mvnormal-のサンプリング速度比較",
+    "title": "Introduction to Coding Agents",
+    "section": "MvNormal のサンプリング速度比較",
+    "text": "MvNormal のサンプリング速度比較\n64次元多変数正規分布 \\(N(\\mu, \\Sigma)\\) に従うサンプリング点 20000 点を生成する速度の比較．\n\nSetup は Σ = L Lᵀ をCholesky 分解で求めるコスト．\nx = μ + L z を計算．z は Ziggurat 法によるサンプリングを使用．\nhttps://github.com/terasakisatoshi/MvNormalBenchmark DeepSeek 4.1 Flash, Codex を使用．\nPython は Numba を使用\n\n\n\n\n\nLanguage\nSetup (ms)\nAvg sampling (ms)\nMin sampling (ms)\n\n\n\n\njulia-ziggurat\n0.072\n9.633\n9.583\n\n\ncxx-ziggurat\n0.026\n9.624\n9.495\n\n\nfortran-ziggurat\n0.026\n12.310\n12.243\n\n\nrust-ziggurat\n0.029\n9.436\n9.400\n\n\npython-ziggurat\n0.131\n15.547\n15.475"
+  },
+  {
+    "objectID": "slides/slide.html#簡単な-poisson-方程式のベンチマーク",
+    "href": "slides/slide.html#簡単な-poisson-方程式のベンチマーク",
+    "title": "Introduction to Coding Agents",
+    "section": "簡単な Poisson 方程式のベンチマーク",
+    "text": "簡単な Poisson 方程式のベンチマーク\nhttps://github.com/terasakisatoshi/poisson_eq_jacobi_benchmark Poisson 方程式の Jacobi 法を比較したベンチマーク．\n\nM5 チップ搭載の Macbook Pro での実行結果．\n\n\n\nImplementation\nLanguage\nTime (s)\n\n\n\n\njulia\nJulia\n3.977462\n\n\njulia_unsafe\nJulia (unsafe)\n3.443576\n\n\npython\nPython + Numba\n3.965009\n\n\ncxx\nC++23\n3.582923\n\n\nfortran\nFortran 2008\n4.041347\n\n\nrust\nRust\n4.620172"
+  },
+  {
+    "objectID": "slides/slide.html#まとめ-1",
+    "href": "slides/slide.html#まとめ-1",
+    "title": "Introduction to Coding Agents",
+    "section": "まとめ",
+    "text": "まとめ\nJulia については文法を何も説明していないが，数値計算で使われている他の言語に劣らず高速に動作することがわかるだろう．"
+  },
+  {
+    "objectID": "slides/slide.html#agentic-coding-1",
+    "href": "slides/slide.html#agentic-coding-1",
+    "title": "Introduction to Coding Agents",
+    "section": "Agentic Coding",
+    "text": "Agentic Coding\n\nAgentic Coding は AI エージェントが自律的にコーディングを行う手法\nデモは Claude Code, Cursor を使用するが，基本的なコンセプトは他のサービスでも同様"
+  },
+  {
+    "objectID": "slides/slide.html#何ができるのかrust版",
+    "href": "slides/slide.html#何ができるのかrust版",
+    "title": "Introduction to Coding Agents",
+    "section": "何ができるのか?(Rust版)",
+    "text": "何ができるのか?(Rust版)\n自然言語を用いて AI に指示をし，プログラムを組むことができる．\nI want to create a Rust crate for simulating and visualizing elastic collisions of multiple balls in 2D space.\nここでは英語で書いたが，もちろん日本語でも可能．具体的な指示を与えるとスムーズにいく\n2D 空間で複数のボールの弾性衝突をシミュレートし、GIF で可視化する Rust クレートを作って。\n`./rust/` に作成。確認や設計の質問はせず、そのまま実装まで進めて。\n仕様に書かれていない細部は、下の「既定の判断」に従い、それ以外は自分で決めて最後に報告すること。\n\n## 物理\n\n- 円(半径・質量が異なる。質量 = π r²)、箱は 800×600(原点は左上、y は下向き)。\n- 玉同士は完全弾性衝突、壁は弾性反射。重力・摩擦・回転はなし。\n- アルゴリズム: 固定時間ステップ + 重なり検出 + 力積解決 + 位置補正。ペア判定は O(n²)。\n- 1 ステップの順序は「移動 → 玉同士 → 壁」(壁を最後にして、ステップ後は必ず箱の内側にする)。\n- 玉同士の判定: n を a→b の単位法線として、重なっていれば常に位置を分離し、\n  接近中((v_a − v_b)·n &gt; 0)のときだけ力積 j = 2(v_a − v_b)·n / (1/m_a + 1/m_b) を適用\n  (v_a −= j/m_a·n、v_b += j/m_b·n)。\n- 壁: 位置を箱の内側へ戻し、その軸の速度を内向きに揃える(すでに内向きなら反転しない)。\n\n## 可視化\n\n- ウィンドウは不要。GIF のみ(ヘッドレス)。\n- `gif` クレート + 自前のソフトウェア描画(パレットインデックスのバッファに円を塗る。アンチエイリアスなし)。\n- パレットは黒の背景 + 16 色(ボール i は 1 + i % 16 番。16 色は互いに異なり、黒でない)。\n- 25 fps(遅延 4/100 秒)、1 フレーム 4 サブステップ(固定 dt = 1/100 秒)、縮尺 0.5(出力 400×300)、無限ループ。\n- 各フレームは「描画 → 4 サブステップ」の順(1 枚目は初期状態)。\n\n## CLI\n\n- `cargo run --release -- [--out collisions.gif] [--balls 30] [--seed 42] [--seconds 10]`\n- 引数解釈は手書き(`clap` は使わない)。不正な値はエラー(メッセージ + usage を stderr、終了コード 1)。\n  不正: 未知の引数、値の欠落(次が `--` で始まる場合も欠落)、`--balls` が 0 以下/整数でない、\n  `--seed` が非負整数でない、`--seconds` が非有限・0 以下、または 25 fps で 1 フレームも作れない長さ。\n- 終了時に出力先・フレーム数(= round(seconds × 25))・初期/最終の運動エネルギーを表示。\n\n## 構成\n\n- lib + bin。`Vec2` / `Ball` / `World` / `render` / `gif_export` / `animation` / `cli` / `main` に分ける。\n  物理(`Vec2` / `Ball` / `World`)は描画に依存させない。\n- 依存は `gif = \"0.14\"` と `rand = \"0.8\"`(0.8 に固定)のみ。\n- `World::new(balls) -&gt; Result&lt;World, Error&gt;` は検証する(半径が正の有限値、位置・速度が有限、\n  箱の内側(接するのは可)、重なりなし)。\n- `World::random(n, seed) -&gt; Result&lt;World, Error&gt;` は再現可能で、重ならない初期配置を返す(乱数は `StdRng`)。\n  半径 10〜30、速さ 20〜200、向きは一様。配置できなければ `PlacementFailed`。\n- 入力検証・CLI・I/O・GIF のエラーは `Error` 列挙型にまとめ、`Display` と `std::error::Error` を実装する。\n\n## 既定の判断(仕様の空白)\n\n- 位置分離は両玉に重なりの半分ずつ配分する。中心が一致する場合は x 軸を仮の法線とする。\n- GIF 書き出しはフレームのイテレータを受け取り、フレームなし・サイズ不一致は `Error`。\n- `animate` は世界を `&mut` で進め、`Vec&lt;Frame&gt;` を返す(最終エネルギーを呼び出し側が読めるように)。\n\n## 開発の進め方\n\n- t_wada 流 TDD(Red → Green → Refactor)。テストを先に書き、失敗を確認してから最小の実装で通す\n  (未実装 API によるコンパイルエラーも Red とみなしてよい)。\n- テストの順序は、Vec2 → Ball → World 検証 → 自由運動と壁 → 衝突(分離 → 力積 → 接近ガード)\n  → 運動量/エネルギー/random → 描画 → GIF → animate → CLI。\n- 長時間のプロパティテスト(`tests/`、複数シード×5000 ステップ、玉数も変える)で、\n  運動エネルギーの保存(相対誤差 1e-9 未満)と全ステップで箱の内側に留まることを確認。同シードで決定的なことも確認。\n- **コミットはしない**(`.gitignore` に `/target` だけ追加)。\n- 完了条件:\n  - `cargo test` 全通過、`cargo clippy --all-targets -- -D warnings` が警告なし。\n  - 既定設定で GIF を実際に生成し、寸法 400×300・250 フレーム・遅延 40ms・無限ループを確認し、\n    フレームを画像として見て円が描かれていることを確認(生成物はリポジトリに置かない)。\n  - 最後に、自分で決めた仕様外の判断を短く報告する。\n- スコープ外: ライブウィンドウ、HUD、アンチエイリアス、重力、マウス操作、空間分割。"
+  },
+  {
+    "objectID": "slides/slide.html#何ができるのかjulia版",
+    "href": "slides/slide.html#何ができるのかjulia版",
+    "title": "Introduction to Coding Agents",
+    "section": "何ができるのか?(Julia版)",
+    "text": "何ができるのか?(Julia版)\n自然言語を用いて AI に指示をし，プログラムを組むことができる．\nI want to create a Julia package for simulating and visualizing elastic collisions of multiple balls in 2D space\nここでは英語で書いたが，もちろん日本語でも可能．具体的な指示を与えるとスムーズにいく\n2D 空間で複数のボールの弾性衝突をシミュレーションし、可視化する Julia パッケージ\nElasticCollisions を ./julia 以下に作ってください。質問はせず、以下の決定事項に従ってください。\n設計書は書かず、コミットもしないでください。開発は TDD で進めてください\n（先に失敗するテストを書き、失敗を確認してから実装する）。\n\n## 物理とシミュレーション\n- ボールは、位置・速度・半径（&gt; 0）・質量（&gt; 0）を持つ剛体の円盤です。\n  半径と質量はボールごとに異なってよいです。重力と摩擦はありません。\n- 容器は、反射壁を持つ矩形 [0, width] x [0, height] です。\n  型名は `Box` ではなく `Arena` にしてください。Makie が `Box` を export しているため、\n  `using ElasticCollisions, CairoMakie` すると名前が曖昧になります。\n- 時間発展はイベント駆動にします。壁・ボール対の衝突時刻を厳密に計算し、\n  全ボールを最も早いイベントまで進めて衝突を解き、これを繰り返します。\n  固定時間刻みは使いません。\n  - ボール対の衝突時刻: |dx + dv t| = r1 + r2 の小さい方の根。ボール同士が接近中\n    （dx・dv &lt; 0）のときだけ対象にします。接触したまま離れていくペアが\n    再衝突しないようにするためです。\n  - ボール対の衝突: 中心を結ぶ線方向の速度成分を質量に応じて交換します。\n    接線方向の成分は変えません。\n  - 同時イベント（コーナーなど）は 1 つずつ順に処理します。\n  - イベントごとの候補探索は、素朴な O(n^2) で十分です。\n\n## 初期条件\n- ボールは `Ball((x, y), (vx, vy), radius, mass)` で明示的に指定できます。\n- `random_balls(n; arena, radius, speed, mass = 1.0, seed = nothing)` は、\n  重ならないボールを棄却サンプリングで生成します。向きはランダム、速さは指定値です。\n  `seed` で再現でき、乱数生成器は `Random.Xoshiro` を使います。\n  配置できなければ `ArgumentError` を投げます。\n- `World(balls, arena)` は、ボールがアリーナからはみ出す、またはボール同士が重なる場合に\n  `ArgumentError` を投げます。\n\n## API\n- export するもの: `Ball`, `Arena`, `World`, `Trajectory`, `kinetic_energy`, `simulate`,\n  `random_balls`, `save_gif`。\n- `simulate(world, T; frame_dt) -&gt; Trajectory`。フィールドは `arena`, `times`,\n  `frames::Vector{Vector{Ball}}` です。フレームは `World` ではなく単なるボールの\n  ベクトルで持ちます。接触時の丸め誤差程度の重なりで、検証エラーが出ないようにするためです。\n  `T` が負、または `frame_dt` が正でない場合は `ArgumentError` を投げます。\n- 内部ヘルパー（`time_to_wall`, `time_to_pair`, `collide_pair`, `collide_wall`,\n  `advance`）は export しません。テストでは明示的に import します。\n\n## 可視化: CairoMakie による GIF 出力（パッケージ拡張）\n- CairoMakie は weakdep にし、`ext/` に拡張 `ElasticCollisionsCairoMakieExt` を置きます。\n  コアパッケージの依存は標準ライブラリの `Random` だけにします。\n- コアでは `function save_gif end` を定義し、拡張が\n  `save_gif(path, trajectory; fps = 30, size = (800, 500)) -&gt; path` を実装します。\n- ボールは `Circle(center, radius)` の `poly!` で描きます（`markersize` 付きの\n  `scatter!` は使いません。データ座標の半径と一致しないためです）。\n  あわせて、アリーナの枠線、`DataAspect`、`t = ...` のタイトル、ボールごとの色を用意します。\n  録画は、Observable のフレーム番号で駆動する `record(...)` で行います。\n\n## 構成とツール（aa-jl スキルに従う）\n- カレントディレクトリに in-place レイアウトで作ります:\n  `Project.toml`, `src/`, `ext/`, `test/`, `README.md`, `.gitignore`\n  （Manifest.toml, test/Manifest.toml, *.gif を無視）。\n- UUID は `UUIDs.uuid4()` で生成します。すべての依存と weakdep に `[compat]` を付けます。\n  テスト環境が `[workspace]` と `[sources]` を使うため、`julia = \"1.12\"` にします。\n- テストは workspace 方式のテスト環境を使います（`test/Project.toml` に、パッケージ本体、\n  Test、CairoMakie、Aqua を入れる）。weakdeps や extensions を編集した後は\n  `Pkg.resolve()` を実行してください。実行しないと拡張が読み込まれません。\n\n## テスト（先に書く）\n1. 型: Ball / Arena / World の検証、`kinetic_energy`。\n2. イベント: 壁との衝突時刻と壁の名前、ボール対の衝突時刻（接近中、離れていく、\n   すれ違う、接触して接近中、接触して離れていく）、`advance`、壁での反射、\n   質量が等しい 2 球の正面衝突での速度交換、質量が異なる場合の運動量とエネルギーの保存。\n3. `simulate`: フレーム時刻、壁の間で跳ね返る 1 球、正面衝突、引数エラー。\n4. `random_balls`: 妥当性、再現性、`mass` キーワード、配置不可能なケース。\n5. 長時間の実行（質量の異なる 20 球、T = 200）: 運動エネルギーの保存（rtol 1e-9）、\n   全ボールがアリーナの内側にあること、重なりがないこと（許容誤差 1e-9）。\n6. `save_gif` が、GIF87a または GIF89a で始まり、フレームごとに 1 つ以上の\n   画像ブロックを持つファイルを書き出すこと。\n7. `Aqua.test_all(ElasticCollisions)`。\n最後に `julia --project -e 'using Pkg; Pkg.test()'` が通ることを確認してください。\n\n## エントリーポイントのスクリプト\nユーザーが次の手順で GIF を得られるようにしてください:\n\n    cd app\n    julia --project main.jl\n\nCairoMakie は weakdep なので、ルートの環境からは読み込めません。そのため、スクリプトは\n`app/` に置き、専用の `Project.toml`（依存は、`[sources] path = \"..\"` 経由の\nElasticCollisions と CairoMakie）を用意し、ルートの `[workspace]` に `\"app\"` を\n追加してください。`app/main.jl` は、`Arena(10, 6)`、ランダムな 15 球\n（半径 0.4、速さ 3、seed 7）を作り、30 fps で 10 秒間シミュレーションして\n`app/collisions.gif` を書き出します。実際に実行し、途中のフレーム（PIL などで抽出）を\n見て、ボールが動いていること、重なっていないこと、アリーナ内に収まっていることを\n確認してください。\n\n使い方（サンプルコード、クイックスタート、テストの実行方法）は README.md に書いてください。"
+  },
+  {
+    "objectID": "slides/slide.html#できるもの",
+    "href": "slides/slide.html#できるもの",
+    "title": "Introduction to Coding Agents",
+    "section": "できるもの",
+    "text": "できるもの\nSonnet 5.5 (medium) による生成物．諸々込みで10分で作成できる．"
+  },
+  {
+    "objectID": "slides/slide.html#どのツールエージェントを",
+    "href": "slides/slide.html#どのツールエージェントを",
+    "title": "Introduction to Coding Agents",
+    "section": "どのツール・エージェントを？",
+    "text": "どのツール・エージェントを？\n\nAI は常に進化するので，単純な答えはない．\n\n各自の予算・目的・開発のフローに応じて適切なツール・エージェントを選ぶべき．\n本講義は 20 ドルプランがあれば十分楽しめるはずだ．\n\nChatGPT を契約しているならば:\n\nCodex が使えるのでそれを使えばよい．\n本講義の内容は GPT-5.6-Luna で十分\n\nClaude を契約しているならば:\n\n本講義の内容であれば Sonnet 5.5 (medium) で十分\n\nVS Code のような開発体験を提供している IDE を使っているならば:\n\nCursor を使えばよい\nGrok 4.7 High Fast というモデルを使えばよい．"
+  },
+  {
+    "objectID": "slides/slide.html#私の場合",
+    "href": "slides/slide.html#私の場合",
+    "title": "Introduction to Coding Agents",
+    "section": "私の場合",
+    "text": "私の場合\nあくまで個人の環境での話です．特定のサービスを推奨するものではありません！！！\n\nISSP の業務では Claude Code, Cursor を使っている\n個人の活動\n\nClaude Code (OSS デベロッパープログラムに加入)\nChatGPT (画像生成，高校数学の問題を解く，諸々の相談，Codex)\nCursor (文章執筆，スライドの作成)\nOpenCode (DeepSeek v4.1 Flash，API経由で)\nKimi (AIが行った作業の日報作成用)\n\nコーディングタスクは VPN 経由で自宅の Linux, macOS マシンにアクセスして行っている\nちなみに\n\nウルトラワイドモニターは作業が捗る"
+  },
+  {
+    "objectID": "slides/slide.html#基本的なコマンド",
+    "href": "slides/slide.html#基本的なコマンド",
+    "title": "Introduction to Coding Agents",
+    "section": "基本的なコマンド",
+    "text": "基本的なコマンド\nClaude Code\n/init # CLAUDE.md の生成\n/login # ログイン\n/usage # 使用量の確認\n/&lt;skill-name&gt; # コマンド・スキルの実行\n/plugins # プラグインの導入など\n/compact # コンテキストを圧縮\n/model # モデルの変更\n/resume # セッションの再開\n/goal # ゴールの設定\n/clear # 新しいセッションを開始\nCodex\n/init # AGENTS.md の生成\n/login # ログイン\n/status # 使用量の確認\n/resume # セッションの再開\n/model # モデルの変更\n/compact # コンテキストを圧縮\n/goal # ゴールの設定\n/clear # 新しいセッションを開始"
+  },
+  {
+    "objectID": "slides/slide.html#ai-agent-の動作原理",
+    "href": "slides/slide.html#ai-agent-の動作原理",
+    "title": "Introduction to Coding Agents",
+    "section": "AI Agent の動作原理",
+    "text": "AI Agent の動作原理\n\nユーザが入力した指示(プロンプト)をエージェントが理解し，その指示に従って行動を行う．\n多くはクラウド環境にあるGPUなどのアクセラレータで計算を実施\n計算結果をクラウド環境から返却し，ユーザに提示する．\nBash, Edit, Read, Write などのファイルの操作，コマンドの実行を実施することがある．"
+  },
+  {
+    "objectID": "slides/slide.html#注意事項",
+    "href": "slides/slide.html#注意事項",
+    "title": "Introduction to Coding Agents",
+    "section": "注意事項",
+    "text": "注意事項\n\nサービスによっては入力が学習に使われることもある．\n\nプライバシーポリシーを確認すること\n例えば OpenCode Zen で提供されている無料の「ステルスモデル」など\n\n学習に使われない場合でも，外部にデータを送信することには変わらない\n\n個人情報(住所，パスワード，APIキー)を入力しない\n機密情報（各組織のルールに依存）を入力しない\n\n必要に応じて Local LLM の検討も行うとよい"
+  },
+  {
+    "objectID": "slides/slide.html#ai-agent-の動作原理-1",
+    "href": "slides/slide.html#ai-agent-の動作原理-1",
+    "title": "Introduction to Coding Agents",
+    "section": "AI Agent の動作原理",
+    "text": "AI Agent の動作原理\nユーザが i+1 回目の会話を開始するとき，エージェントは 「1 から i 回目までのユーザメッセージと対応する回答」を Claude 内部が持っている機械学習モデルに入力として渡している．\nその入力をもとにモデルは回答を生成している．\nこのようにしないと，「これまでの議論をまとめ」てといった人間の指示(プロンプト)への回答に対応できない．\n\n画像は Claude の公式ドキュメントより引用．"
+  },
+  {
+    "objectID": "slides/slide.html#セッションが切れると会話を忘れる",
+    "href": "slides/slide.html#セッションが切れると会話を忘れる",
+    "title": "Introduction to Coding Agents",
+    "section": "セッションが切れると会話を忘れる",
+    "text": "セッションが切れると会話を忘れる\n/clear コマンドを実行すると，セッションが切れる．それまでの会話は忘れてしまう．\nやっほー\n(Claude がやっほーというメッセージに対して回答する)\n/clear\nさっき言ったこと覚えてる？\n(Claude は覚えてないと回答する)\nナイーブに運用するとセッションごとに同じ説明をユーザは入れないといけない．"
+  },
+  {
+    "objectID": "slides/slide.html#セッションをずっと保持すれば",
+    "href": "slides/slide.html#セッションをずっと保持すれば",
+    "title": "Introduction to Coding Agents",
+    "section": "セッションをずっと保持すれば？",
+    "text": "セッションをずっと保持すれば？\n\nそういうわけではない．\nワーキングメモリに投入するトークンが増えるにつれて，回答精度が低下するコンテキストロット context rot と呼ばれる現象が生じる．\n1回のセッションに投入するコンテキスト・文脈は必要なものに留めるのがよい．予算的にも，モデルの精度的にも．\n1 セッションでは一つの目的に集中するのがよい．\n/compact コマンドを実行すると，コンテキストを圧縮することができる．"
+  },
+  {
+    "objectID": "slides/slide.html#agents.md-claude.md-の生成",
+    "href": "slides/slide.html#agents.md-claude.md-の生成",
+    "title": "Introduction to Coding Agents",
+    "section": "AGENTS.md, CLAUDE.md の生成",
+    "text": "AGENTS.md, CLAUDE.md の生成\n\nプロジェクトごとのルール・原則をまとめたファイル．エージェントを起動するとこれが読み込まれる．\n/init で既存のプロジェクトに対するルールを推測し，AGENTS.md を生成することもできる．\nClaude Code では CLAUDE.md という名前で生成される．\n\n最近 AGENTS.md を読み込むこともサポートされた．\n\n\nClaude Code の公式ドキュメント によれば 200 行以下であることが望ましい．\n特定の状況で行うべき作業の内容，ワークフローの詳細はスキル(skills)として定義することができる."
+  },
+  {
+    "objectID": "slides/slide.html#スキルskills",
+    "href": "slides/slide.html#スキルskills",
+    "title": "Introduction to Coding Agents",
+    "section": "スキル(skills)",
+    "text": "スキル(skills)\n特定の状況で行うべき作業の内容，ワークフローの詳細を記述したもの．実態YAML Frontmatter と Markdown フォーマットで記述されたファイル．\n\ndescription には発動条件を書く．Markdown には作業内容を記述する．"
+  },
+  {
+    "objectID": "slides/slide.html#スキルの例",
+    "href": "slides/slide.html#スキルの例",
+    "title": "Introduction to Coding Agents",
+    "section": "スキルの例",
+    "text": "スキルの例\n\nobra/superpowers\n\nソフトウェア開発のベストプラクティスに則り行動を促すスキル\n\nGiggleLiu/agentic-tests\n\nエージェントが生成したドキュメント，スキルが有効に動作するかを検証するスキル\n\ncoji/natural-japanese\n\n自然な日本語での会話を促すスキル\n\nAtelierArith/atelier-arith-julia-development-skills\n\nJulia でのソフトウェア開発のベストプラクティスに則り行動を促すスキル"
+  },
+  {
+    "objectID": "slides/slide.html#スキル導入時の注意事項",
+    "href": "slides/slide.html#スキル導入時の注意事項",
+    "title": "Introduction to Coding Agents",
+    "section": "スキル導入時の注意事項",
+    "text": "スキル導入時の注意事項\n\nスキルはエージェントの振る舞いを変更するので，悪意のあるスキルを導入するとエージェントが不正な行動を行う可能性がある．\nskill-scanner を使ってスキルに悪意のあるプロンプト，潜在的なリスクのあるスクリプトの実行の誘導を検知することができる．\n\n$ uv init\n$ mkdir ./tmp\n$ cd ./tmp\n$ uv init\n$ uv add cisco-ai-skill-scanner\n$ uv run skill-scanner scan-all &lt;path/to/skills&gt; # スキルをスキャン"
+  },
+  {
+    "objectID": "slides/slide.html#スキルの使用法",
+    "href": "slides/slide.html#スキルの使用法",
+    "title": "Introduction to Coding Agents",
+    "section": "スキルの使用法",
+    "text": "スキルの使用法\n\n状況に応じてエージェントが自動的にスキルを使用する\nClaude Code, OpenCode では /&lt;skill-name&gt; のように明示的に呼び出すことができる．\nCodex では $&lt;skill-name&gt; のように明示的に呼び出すことができる．\n“ を使って XXX を行ってください” のように指示を出してもよい．"
+  },
+  {
+    "objectID": "slides/slide.html#mcp-model-context-protocol",
+    "href": "slides/slide.html#mcp-model-context-protocol",
+    "title": "Introduction to Coding Agents",
+    "section": "MCP (Model Context Protocol)",
+    "text": "MCP (Model Context Protocol)\n(おもに)AIツールが外部リソースを取得するために作られた通信プロトコルの一つ\n下記のようなことは，Bash, Web 検索するツールを用いない限り，苦手・事実上不可能．\n\n今何時？ # 時刻取得はコマンドで取得可能だが，LLM 自体がその知識を持っているわけではない\n今日の天気は？ # 天気予報は外部リソースへのアクセスが必要\n“XXX のデータを見せて” # データベースへのアクセスが必要\n“GitHub の Issue を読んで” # 外部リソースへのアクセスが必要"
+  },
+  {
+    "objectID": "slides/slide.html#mcp-の例",
+    "href": "slides/slide.html#mcp-の例",
+    "title": "Introduction to Coding Agents",
+    "section": "MCP の例",
+    "text": "MCP の例\n$ claude mcp add --scope user time -- uvx mcp-server-time --local-timezone=Asia/Tokyo\n$ claude\n❯ 今何時？ シェルコマンドを使わないで教えてくれる？\n  Called time # time という MCP サーバーを呼び出している\n今は日本時間で 2026年9月30日（水）14:46 です。 # 時刻を返却している\n実装はこちら\nアンインストールは次のようにして行うことができる．\n$ claude mcp remove --scope user time"
+  },
+  {
+    "objectID": "slides/slide.html#fastmcp-による-mcp-サーバの作成",
+    "href": "slides/slide.html#fastmcp-による-mcp-サーバの作成",
+    "title": "Introduction to Coding Agents",
+    "section": "FastMCP による MCP サーバの作成",
+    "text": "FastMCP による MCP サーバの作成\nFastMCP v2 packgae を使えば FastAPI のようなノリでサーバを作ることができる．\nfrom fastmcp import FastMCP\n\nmcp = FastMCP(\"demo-server\")\n\n@mcp.tool()\nasync def hello(name: str) -&gt; str:\n    return f\"Hello, {name}!\"\n\nif __name__ == \"__main__\":\n    mcp.run()"
+  },
+  {
+    "objectID": "slides/slide.html#fastmcp-のクライアント例",
+    "href": "slides/slide.html#fastmcp-のクライアント例",
+    "title": "Introduction to Coding Agents",
+    "section": "FastMCP のクライアント例",
+    "text": "FastMCP のクライアント例\n\n# 前のページの server.py と同じ階層に作成\nimport asyncio\nfrom fastmcp import Client\n\nasync def test_hello():\n    async with Client(\"server.py\") as client:\n        result = await client.call_tool(\n            \"hello\",\n            {\n                \"name\": \"Yamada Taro\"\n            }\n        )\n        print(result.structured_content[\"result\"])\n\nif __name__ == \"__main__\":\n    asyncio.run(test_hello())\n次のようになる\n$ uv run client.py\n INFO     Starting MCP server 'demo-server' with transport 'stdio'\nHello, Yamada Taro!"
+  },
+  {
+    "objectID": "slides/slide.html#mnist-のデータを使ったサンプル",
+    "href": "slides/slide.html#mnist-のデータを使ったサンプル",
+    "title": "Introduction to Coding Agents",
+    "section": "MNIST のデータを使ったサンプル",
+    "text": "MNIST のデータを使ったサンプル\nClaude Code ユーザ向け\n$ cd handouts/mcp/mnist/web_claude\n$ uv sync\n$ uv run python download_data.py\n$ uv run python app.py\nCodex ユーザ向け\n$ cd handouts/mcp/mnist/web_codex\n$ uv sync\n$ uv run python download_data.py\n$ uv run python app.py"
+  },
+  {
+    "objectID": "slides/slide.html#サンドボックス環境の構築",
+    "href": "slides/slide.html#サンドボックス環境の構築",
+    "title": "Introduction to Coding Agents",
+    "section": "サンドボックス環境の構築",
+    "text": "サンドボックス環境の構築\nhandouts/devcontainer 以下にあるディレクトリで開発環境を構築することができる．\nVS Code や Cursor などの IDE で開発環境を構築することができる．\nOpenCode を使うことで無料で使えるモデルがあるが，モデルの改善に使われる可能性があることに留意すること．"
+  },
+  {
+    "objectID": "slides/slide.html#その他応用",
+    "href": "slides/slide.html#その他応用",
+    "title": "Introduction to Coding Agents",
+    "section": "その他応用",
+    "text": "その他応用\n\nCoding Agent は他言語への移植が得意である．\n\n単体テストが書かれていれば現代的な言語へ移行ができる\n\n複数のプログラミング言語を操ることができる．\n\n複数の観点からアルゴリズム，パフォーマンスを見直すことができる\n動的言語だからといって遅いわけではない\n静的言語を使うからといって無条件に高速にはならない\n\n適切なアルゴリズム，データ構造，ライブラリを使う必要がある．"
+  },
+  {
+    "objectID": "slides/slide.html#math-quiz",
+    "href": "slides/slide.html#math-quiz",
+    "title": "Introduction to Coding Agents",
+    "section": "Math Quiz",
+    "text": "Math Quiz\n二つのの正の整数 \\(a\\), \\(b\\) が与えられた時，最大公約数 \\(\\gcd(a,b)\\) が 1 になる確率はどれくらい？\n\n正解は\n\\[\n\\begin{aligned}\n\\mathrm{Prob}(\\gcd(a, b) = 1)\n&= \\frac{1}{\\zeta(2)} \\\\\n&= \\frac{6}{\\pi^2} \\\\\n&\\approx 0.6079271018540267 &gt; 0.5\n\\end{aligned}\n\\]\nここで，\\(\\zeta\\) はリーマン・ゼータ関数である．\n\\[\n\\zeta(s) = \\sum_{n=1}^{\\infty} \\frac{1}{n^s}= \\prod_{p: \\mathrm{primes} } \\left(\\frac{1}{1 - p^{-s}}  \\right) \\mathrm{}\n\\]\nここで，2番目の等式は Euler product として知られている等式である．"
+  },
+  {
+    "objectID": "slides/slide.html#証明",
+    "href": "slides/slide.html#証明",
+    "title": "Introduction to Coding Agents",
+    "section": "証明",
+    "text": "証明\n\\[\n\\begin{aligned}\n\\mathrm{Prob}(\\gcd(a, b) = 1)\n&= \\prod_{p: \\mathrm{primes} } \\left( 1 - \\mathrm{Prob}(p | a \\textrm{ and } p | b)\\right) \\\\\n&= \\prod_{p: \\mathrm{primes} } \\left( 1 - \\mathrm{Prob}(p | a)\\mathrm{Prob}(p | b)\\right) \\\\\n&= \\prod_{p: \\mathrm{primes} } \\left( 1 - \\frac{1}{p}\\cdot\\frac{1}{p}\\right) \\\\\n&= \\prod_{p: \\mathrm{primes} } \\left( 1 - p^{-2}\\right) \\\\\n&= \\left(\\prod_{p: \\mathrm{primes} } \\left(\\frac{1}{1 - p^{-2}}  \\right)\\right)^{-1} \\\\\n&=\\left(\\zeta(2)\\right)^{-1} \\\\\n&= \\frac{1}{\\zeta(2)} = \\frac{6}{\\pi^2}\n\\end{aligned}\n\\]"
+  },
+  {
+    "objectID": "slides/slide.html#application-js-implementation",
+    "href": "slides/slide.html#application-js-implementation",
+    "title": "Introduction to Coding Agents",
+    "section": "Application (JS implementation)",
+    "text": "Application (JS implementation)\n先ほどの証明から次を得る:\n\\[\n\\pi = \\sqrt{\\frac{6}{\\mathrm{Prob}(\\gcd(a, b)=1)}}\n\\]\n数値計算で確かめてみよう\n// Function to approximate pi\n// using probability that two numbers are coprime\nfunction calcPi(N) {\n    let cnt = 0;    // Counter for coprime pairs\n    // Loop through all pairs (a, b) where 1 &lt;= a, b &lt;= N\n    for (let a = 1; a &lt;= N; a++) {\n        for (let b = 1; b &lt;= N; b++) {\n            // Check if a and b are coprime\n            if (mygcd(a, b) === 1) {\n                cnt += 1;  // Increment counter if coprime\n            }\n        }\n    }\n    // Probability that two numbers are coprime\n    let prob = cnt / (N * N);\n    // Approximate pi using the formula: pi ≈ sqrt(6 / prob)\n    return Math.sqrt(6 / prob);\n}"
+  },
+  {
+    "objectID": "slides/slide.html#application-js-implementation-1",
+    "href": "slides/slide.html#application-js-implementation-1",
+    "title": "Introduction to Coding Agents",
+    "section": "Application (JS implementation)",
+    "text": "Application (JS implementation)\n最大公約数を利用して \\(\\pi \\approx 3.14...\\) を計算しよう:\n// approx_pi_gcd.js\n\n// Function to compute the greatest common divisor (GCD) using the Euclidean algorithm\nfunction mygcd(a, b) {\n    // Loop until the remainder is zero\n    while (b !== 0) {\n        let tmp = b;    // Store the value of b temporarily\n        b = a % b;      // Update b to the remainder of a divided by b\n        a = tmp;        // Set a to the previous value of b\n    }\n    return a;           // When b is zero, a is the GCD\n}\n\n// Function to approximate pi using probability that two numbers are coprime\nfunction calcPi(N) {\n    let cnt = 0;    // Counter for coprime pairs\n    // Loop through all pairs (a, b) where 1 &lt;= a, b &lt;= N\n    for (let a = 1; a &lt;= N; a++) {\n        for (let b = 1; b &lt;= N; b++) {\n            // Check if a and b are coprime\n            if (mygcd(a, b) === 1) {\n                cnt += 1;  // Increment counter if coprime\n            }\n        }\n    }\n    // Probability that two numbers are coprime\n    let prob = cnt / (N * N);\n    // Approximate pi using the formula: pi ≈ sqrt(6 / prob)\n    return Math.sqrt(6 / prob);\n}\n\n// Main function to run the pi approximation\nfunction main() {\n    let N = 10000;            // Number limit for coprimality checking\n    let pi = calcPi(N);       // Approximate pi\n    console.log(`N: ${N}`);   // Output N\n    console.log(`pi: ${pi}`); // Output approximation of pi\n}\n\nmain(); // Call the main function\nResult\n$ node approx_pi_gcd.js\ncalcPi: 2.175s\nN: 10000\npi: 3.141534239016629"
+  },
+  {
+    "objectID": "slides/slide.html#exercise",
+    "href": "slides/slide.html#exercise",
+    "title": "Introduction to Coding Agents",
+    "section": "Exercise",
+    "text": "Exercise\n先ほどの JavaScript のコードを Julia, Rust に移植してください． N=10000 の時の実行時間を計測してください．\nHint\n下記のプロンプトを使う\n\nPort approx_pi_gcd.js to Julia and save the result as approx_pi_gcd.jl\n\n\nPort approx_pi_gcd.rs to Rust and save the result as approx_pi_gcd.rs"
+  },
+  {
+    "objectID": "slides/slide.html#answerjulia",
+    "href": "slides/slide.html#answerjulia",
+    "title": "Introduction to Coding Agents",
+    "section": "Answer(Julia)",
+    "text": "Answer(Julia)\n# Function to compute the greatest common divisor (GCD) using the Euclidean algorithm\nfunction mygcd(a, b)\n    # Loop until the remainder is zero\n    while b != 0\n        tmp = b    # Store the value of b temporarily\n        b = a % b  # Update b to the remainder of a divided by b\n        a = tmp    # Set a to the previous value of b\n    end\n    return a       # When b is zero, a is the GCD\nend\n\n# Function to approximate pi using probability that two numbers are coprime\nfunction calcPi(N)\n    cnt = 0    # Counter for coprime pairs\n    # Loop through all pairs (a, b) where 1 &lt;= a, b &lt;= N\n    for a in 1:N\n        for b in 1:N\n            # Check if a and b are coprime\n            if mygcd(a, b) == 1\n                cnt += 1  # Increment counter if coprime\n            end\n        end\n    end\n    # Probability that two numbers are coprime\n    prob = cnt / (N * N)\n    # Approximate pi using the formula: pi ≈ sqrt(6 / prob)\n    return sqrt(6 / prob)\nend\n\n# Main function to run the pi approximation\nfunction main()\n    N = 10000            # Number limit for coprimality checking\n    approx_pi = @time calcPi(N) # Approximate pi and time it\n    println(\"N: $(N)\")   # Output N\n    println(\"pi: $(approx_pi)\") # Output approximation of pi\nend\n\nmain() # Call the main function\nResult\n$ julia approx_pi_gcd.jl\n  1.865392 seconds\nN: 10000\npi: 3.141534239016629"
+  },
+  {
+    "objectID": "slides/slide.html#answer-rust",
+    "href": "slides/slide.html#answer-rust",
+    "title": "Introduction to Coding Agents",
+    "section": "Answer (Rust)",
+    "text": "Answer (Rust)\n// Function to compute the greatest common divisor (GCD) using the Euclidean algorithm\nfn mygcd(a: u64, b: u64) -&gt; u64 {\n    let mut a = a;\n    let mut b = b;\n    // Loop until the remainder is zero\n    while b != 0 {\n        let tmp = b;    // Store the value of b temporarily\n        b = a % b;      // Update b to the remainder of a divided by b\n        a = tmp;        // Set a to the previous value of b\n    }\n    a                   // When b is zero, a is the GCD\n}\n\n// Function to approximate pi using probability that two numbers are coprime\nfn calc_pi(n: u64) -&gt; f64 {\n    let mut cnt = 0u64; // Counter for coprime pairs\n    // Loop through all pairs (a, b) where 1 &lt;= a, b &lt;= N\n    for a in 1..=n {\n        for b in 1..=n {\n            // Check if a and b are coprime\n            if mygcd(a, b) == 1 {\n                cnt += 1;  // Increment counter if coprime\n            }\n        }\n    }\n    // Probability that two numbers are coprime\n    let prob = cnt as f64 / (n as f64 * n as f64);\n    // Approximate pi using the formula: pi ≈ sqrt(6 / prob)\n    (6.0 / prob).sqrt()\n}\n\n// Main function to run the pi approximation\nfn main() {\n    let n = 10000u64;   // Number limit for coprimality checking\n    let start = std::time::Instant::now();\n    let pi = calc_pi(n); // Approximate pi\n    let duration = start.elapsed();\n    println!(\"calcPi: {:?}\", duration);\n    println!(\"N: {}\", n);   // Output N\n    println!(\"pi: {}\", pi); // Output approximation of pi\n}\nResult\n$ rustc -C opt-level=3 approx_pi_gcd.rs && ./approx_pi_gcd\ncalcPi: 1.754083333s\nN: 10000\npi: 3.141534239016629"
+  },
+  {
+    "objectID": "slides/slide.html#answer-c",
+    "href": "slides/slide.html#answer-c",
+    "title": "Introduction to Coding Agents",
+    "section": "Answer (C)",
+    "text": "Answer (C)\n#include &lt;stdio.h&gt;\n#include &lt;math.h&gt;\n#include &lt;time.h&gt;\n\n// Function to compute the greatest common divisor (GCD) using the Euclidean algorithm\nint mygcd(int a, int b) {\n    // Loop until the remainder is zero\n    while (b != 0) {\n        int tmp = b;    // Store the value of b temporarily\n        b = a % b;      // Update b to the remainder of a divided by b\n        a = tmp;        // Set a to the previous value of b\n    }\n    return a;           // When b is zero, a is the GCD\n}\n\n// Function to approximate pi using probability that two numbers are coprime\ndouble calcPi(int N) {\n    int cnt = 0;    // Counter for coprime pairs\n    // Loop through all pairs (a, b) where 1 &lt;= a, b &lt;= N\n    for (int a = 1; a &lt;= N; a++) {\n        for (int b = 1; b &lt;= N; b++) {\n            // Check if a and b are coprime\n            if (mygcd(a, b) == 1) {\n                cnt += 1;  // Increment counter if coprime\n            }\n        }\n    }\n    // Probability that two numbers are coprime\n    double prob = (double)cnt / (N * N);\n    // Approximate pi using the formula: pi ≈ sqrt(6 / prob)\n    return sqrt(6.0 / prob);\n}\n\n// Main function to run the pi approximation\nint main() {\n    int N = 10000;            // Number limit for coprimality checking\n    clock_t start = clock();\n    double pi = calcPi(N);    // Approximate pi\n    clock_t end = clock();\n    double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;\n\n    printf(\"calcPi: %f seconds\\n\", cpu_time_used);\n    printf(\"N: %d\\n\", N);     // Output N\n    printf(\"pi: %f\\n\", pi);   // Output approximation of pi\n\n    return 0;\n}\nResult\n$ gcc -O3 approx_pi_gcd.c && ./a.out\ncalcPi: 1.753796 seconds\nN: 10000\npi: 3.141534"
+  },
+  {
+    "objectID": "slides/slide.html#julia-can-execute-this-much-faster.",
+    "href": "slides/slide.html#julia-can-execute-this-much-faster.",
+    "title": "Introduction to Coding Agents",
+    "section": "Julia can execute this much faster.",
+    "text": "Julia can execute this much faster.\n# Function to approximate pi using probability that two numbers are coprime\nfunction calcPi(N)\n    cnt = 0    # Counter for coprime pairs\n    # Loop through all pairs (a, b) where 1 &lt;= a, b &lt;= N\n    for a in 1:N\n        for b in 1:N\n            # Check if a and b are coprime\n            if gcd(a, b) == 1\n                cnt += 1  # Increment counter if coprime\n            end\n        end\n    end\n    # Probability that two numbers are coprime\n    prob = cnt / (N * N)\n    # Approximate pi using the formula: pi ≈ sqrt(6 / prob)\n    return sqrt(6 / prob)\nend\n\n# Main function to run the pi approximation\nfunction main()\n    N = 10000            # Number limit for coprimality checking\n    approx_pi = @time calcPi(N) # Approximate pi and time it\n    println(\"N: $(N)\")   # Output N\n    println(\"pi: $(approx_pi)\") # Output approximation of pi\nend\n\nmain() # Call the main function\nResult\njulia approx_pi_gcd.jl\n  1.454210 seconds\nN: 10000\npi: 3.141534239016629"
+  },
+  {
+    "objectID": "slides/slide.html#julia-が速くなった",
+    "href": "slides/slide.html#julia-が速くなった",
+    "title": "Introduction to Coding Agents",
+    "section": "Julia が速くなった?!",
+    "text": "Julia が速くなった?!\n1.865392 seconds -&gt; 1.454210 seconds となる理由は？\nJulia が提供する gcd 関数はユークリッド互除法とは異なるアルゴリズムを用いているからである．"
+  },
+  {
+    "objectID": "slides/slide.html#exercise-1",
+    "href": "slides/slide.html#exercise-1",
+    "title": "Introduction to Coding Agents",
+    "section": "Exercise",
+    "text": "Exercise\n\nJulia のリポジトリをクローンしてコーディングエージェントに gcd 関数がどのようになっているかを答えさせよ．\n採用しているアルゴリズムは何かを答えさせよ．\n先ほど JavaScript から Rust に移植したコードで mygcd の代わりに Julia が実装している gcd 関数を移植させよ．\n\nHint\n\ngit clone --depth 1 &lt;url&gt; ですばやくクローンができる(shallow clone). Use the following prompt:\n\n\nRead the Julia code and answer how the gcd function is defined. Read @julia\n\n\nPort these gcd functions to Rust"
+  },
+  {
+    "objectID": "slides/slide.html#answer",
+    "href": "slides/slide.html#answer",
+    "title": "Introduction to Coding Agents",
+    "section": "Answer",
+    "text": "Answer\n# binary GCD (aka Stein's) algorithm\n# about 1.7x (2.1x) faster for random Int64s (Int128s)\n# Unfortunately, we need to manually annotate this as `@assume_effects :terminates_locally` to work around #41694.\n# Since this is used in the Rational constructor, constant folding is something we do care about here.\n@assume_effects :terminates_locally function _gcd(ain::T, bin::T) where T&lt;:BitInteger\n    zb = trailing_zeros(bin)\n    za = trailing_zeros(ain)\n    a = abs(ain)\n    b = abs(bin &gt;&gt; zb)\n    k = min(za, zb)\n    while a != 0\n        a &gt;&gt;= za\n        absd, diff = absdiff(a, b)\n        za = trailing_zeros(diff)\n        b = min(a, b)\n        a = absd\n    end\n    r = b &lt;&lt; k\n    return r % T\nend"
+  },
+  {
+    "objectID": "slides/slide.html#answer-rust-implementation",
+    "href": "slides/slide.html#answer-rust-implementation",
+    "title": "Introduction to Coding Agents",
+    "section": "Answer (Rust implementation)",
+    "text": "Answer (Rust implementation)\n// Port of Julia's gcd functions from base/intfuncs.jl\n// Greatest common divisor implementations using Euclidean and Binary GCD algorithms\n\nuse std::ops::{Rem, Shr, Shl, Sub, BitAnd};\n\n/// Greatest common (positive) divisor (or zero if all arguments are zero).\n///\n/// This is the general implementation for all integer types using the Euclidean algorithm.\npub fn gcd&lt;T&gt;(mut a: T, mut b: T) -&gt; T\nwhere\n    T: Copy + PartialEq + Rem&lt;Output = T&gt; + From&lt;u8&gt; + Default,\n{\n    let zero = T::from(0u8);\n    while b != zero {\n        let t = b;\n        b = a % b;\n        a = t;\n    }\n    checked_abs(a)\n}\n\n/// Greatest common divisor for fixed-width integer types using Binary GCD (Stein's) algorithm.\n///\n/// This is about 1.7x (2.1x) faster for random Int64s (Int128s) compared to Euclidean algorithm.\npub fn gcd_bitinteger&lt;T&gt;(a: T, b: T) -&gt; T\nwhere\n    T: Copy\n        + PartialEq\n        + PartialOrd\n        + Shr&lt;usize, Output = T&gt;\n        + Shl&lt;usize, Output = T&gt;\n        + BitAnd&lt;Output = T&gt;\n        + Sub&lt;Output = T&gt;\n        + From&lt;u8&gt;\n        + Default,\n{\n    let zero = T::from(0u8);\n\n    if a == zero {\n        return checked_abs(b);\n    }\n    if b == zero {\n        return checked_abs(a);\n    }\n\n    // Handle typemin case for signed types\n    // In Rust, we check for the minimum value differently\n    // For now, we'll proceed with the algorithm\n\n    _gcd(a, b)\n}\n\n/// Binary GCD (aka Stein's) algorithm implementation.\n///\n/// This is the core algorithm that's faster for fixed-width integers.\nfn _gcd&lt;T&gt;(ain: T, bin: T) -&gt; T\nwhere\n    T: Copy\n        + PartialEq\n        + PartialOrd\n        + Shr&lt;usize, Output = T&gt;\n        + Shl&lt;usize, Output = T&gt;\n        + BitAnd&lt;Output = T&gt;\n        + Sub&lt;Output = T&gt;\n        + From&lt;u8&gt;\n        + Default,\n{\n    let zero = T::from(0u8);\n\n    let zb = trailing_zeros(bin);\n    let mut za = trailing_zeros(ain);\n    let mut a = abs(ain);\n    let mut b = abs(bin &gt;&gt; zb);\n    let k = if za &lt; zb { za } else { zb };\n\n    while a != zero {\n        a = a &gt;&gt; za;\n        let (absd, diff) = absdiff(a, b);\n        za = trailing_zeros(diff);\n        b = if a &lt; b { a } else { b };\n        a = absd;\n    }\n\n    let r = b &lt;&lt; k;\n    r\n}\n\n/// Compute absolute difference between two values.\n/// Returns (absolute difference, signed difference).\nfn absdiff&lt;T&gt;(x: T, y: T) -&gt; (T, T)\nwhere\n    T: Copy + PartialOrd + Sub&lt;Output = T&gt; + From&lt;u8&gt;,\n{\n    if x &gt;= y {\n        let d = x - y;\n        (d, d)\n    } else {\n        let d = y - x;\n        (d, d)\n    }\n}\n\n/// Compute the number of trailing zeros in the binary representation.\n///\n/// For unsigned types, this counts trailing zeros.\n/// For signed types, we convert to unsigned first.\nfn trailing_zeros&lt;T&gt;(x: T) -&gt; usize\nwhere\n    T: Copy,\n{\n    // This is a simplified version. In practice, you'd use the built-in\n    // trailing_zeros method for each integer type.\n    // For a generic implementation, we'd need trait bounds that include\n    // the actual integer traits.\n\n    // For now, we'll use a basic implementation\n    // In real code, you'd specialize for each integer type\n    if let Some(val) = try_to_u64(x) {\n        val.trailing_zeros() as usize\n    } else {\n        // Fallback: count manually\n        count_trailing_zeros_fallback(x)\n    }\n}\n\n/// Try to convert a value to u64 for trailing_zeros calculation.\nfn try_to_u64&lt;T&gt;(_x: T) -&gt; Option&lt;u64&gt; {\n    None // Generic implementation - would need specialization\n}\n\n/// Fallback trailing zeros counting.\nfn count_trailing_zeros_fallback&lt;T&gt;(_x: T) -&gt; usize {\n    0 // Placeholder - would need proper implementation\n}\n\n/// Compute absolute value with overflow checking.\nfn checked_abs&lt;T&gt;(x: T) -&gt; T\nwhere\n    T: Copy,\n{\n    // For unsigned types, abs is a no-op\n    // For signed types, we'd use checked_abs\n    // This is a simplified version\n    abs(x)\n}\n\n/// Compute absolute value.\nfn abs&lt;T&gt;(x: T) -&gt; T\nwhere\n    T: Copy,\n{\n    // For unsigned types, this is a no-op\n    // For signed types, we'd need to handle negation\n    // This is a simplified generic version\n    x\n}\n\n// Specialized implementations for specific integer types\n\n/// GCD for u8\npub fn gcd_u8(a: u8, b: u8) -&gt; u8 {\n    gcd_bitinteger_u8(a, b)\n}\n\n/// Binary GCD for u8 (Stein's algorithm matching Julia's implementation)\npub fn gcd_bitinteger_u8(ain: u8, bin: u8) -&gt; u8 {\n    if ain == 0 {\n        return bin;\n    }\n    if bin == 0 {\n        return ain;\n    }\n\n    let zb = bin.trailing_zeros() as usize;\n    let mut za = ain.trailing_zeros() as usize;\n    let mut a = ain;\n    let mut b = bin &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    b &lt;&lt; k\n}\n\n/// GCD for u16\npub fn gcd_u16(a: u16, b: u16) -&gt; u16 {\n    gcd_bitinteger_u16(a, b)\n}\n\n/// Binary GCD for u16 (Stein's algorithm matching Julia's implementation)\npub fn gcd_bitinteger_u16(ain: u16, bin: u16) -&gt; u16 {\n    if ain == 0 {\n        return bin;\n    }\n    if bin == 0 {\n        return ain;\n    }\n\n    let zb = bin.trailing_zeros() as usize;\n    let mut za = ain.trailing_zeros() as usize;\n    let mut a = ain;\n    let mut b = bin &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    b &lt;&lt; k\n}\n\n/// GCD for u32\npub fn gcd_u32(a: u32, b: u32) -&gt; u32 {\n    gcd_bitinteger_u32(a, b)\n}\n\n/// Binary GCD for u32 (Stein's algorithm matching Julia's implementation)\npub fn gcd_bitinteger_u32(ain: u32, bin: u32) -&gt; u32 {\n    if ain == 0 {\n        return bin;\n    }\n    if bin == 0 {\n        return ain;\n    }\n\n    let zb = bin.trailing_zeros() as usize;\n    let mut za = ain.trailing_zeros() as usize;\n    let mut a = ain;\n    let mut b = bin &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    b &lt;&lt; k\n}\n\n/// GCD for u64\npub fn gcd_u64(a: u64, b: u64) -&gt; u64 {\n    gcd_bitinteger_u64(a, b)\n}\n\n/// Binary GCD for u64 (Stein's algorithm matching Julia's implementation)\npub fn gcd_bitinteger_u64(ain: u64, bin: u64) -&gt; u64 {\n    if ain == 0 {\n        return bin;\n    }\n    if bin == 0 {\n        return ain;\n    }\n\n    let zb = bin.trailing_zeros() as usize;\n    let mut za = ain.trailing_zeros() as usize;\n    let mut a = ain;\n    let mut b = bin &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    b &lt;&lt; k\n}\n\n/// GCD for u128\npub fn gcd_u128(a: u128, b: u128) -&gt; u128 {\n    gcd_bitinteger_u128(a, b)\n}\n\n/// Binary GCD for u128 (Stein's algorithm matching Julia's implementation)\npub fn gcd_bitinteger_u128(ain: u128, bin: u128) -&gt; u128 {\n    if ain == 0 {\n        return bin;\n    }\n    if bin == 0 {\n        return ain;\n    }\n\n    let zb = bin.trailing_zeros() as usize;\n    let mut za = ain.trailing_zeros() as usize;\n    let mut a = ain;\n    let mut b = bin &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    b &lt;&lt; k\n}\n\n/// GCD for i8\npub fn gcd_i8(a: i8, b: i8) -&gt; i8 {\n    gcd_bitinteger_i8(a, b)\n}\n\n/// Binary GCD for i8 with signed integer handling (matching Julia's algorithm)\npub fn gcd_bitinteger_i8(ain: i8, bin: i8) -&gt; i8 {\n    if ain == 0 {\n        return bin.abs();\n    }\n    if bin == 0 {\n        return ain.abs();\n    }\n\n    // Handle typemin case\n    if ain == i8::MIN && ain == bin {\n        panic!(\"gcd({}, {}) overflows\", ain, bin);\n    }\n\n    let zb = bin.unsigned_abs().trailing_zeros() as usize;\n    let mut za = ain.unsigned_abs().trailing_zeros() as usize;\n    let mut a = ain.unsigned_abs();\n    let mut b = bin.unsigned_abs() &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    (b &lt;&lt; k) as i8\n}\n\n/// GCD for i16\npub fn gcd_i16(a: i16, b: i16) -&gt; i16 {\n    gcd_bitinteger_i16(a, b)\n}\n\n/// Binary GCD for i16 with signed integer handling (matching Julia's algorithm)\npub fn gcd_bitinteger_i16(ain: i16, bin: i16) -&gt; i16 {\n    if ain == 0 {\n        return bin.abs();\n    }\n    if bin == 0 {\n        return ain.abs();\n    }\n\n    if ain == i16::MIN && ain == bin {\n        panic!(\"gcd({}, {}) overflows\", ain, bin);\n    }\n\n    let zb = bin.unsigned_abs().trailing_zeros() as usize;\n    let mut za = ain.unsigned_abs().trailing_zeros() as usize;\n    let mut a = ain.unsigned_abs();\n    let mut b = bin.unsigned_abs() &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    (b &lt;&lt; k) as i16\n}\n\n/// GCD for i32\npub fn gcd_i32(a: i32, b: i32) -&gt; i32 {\n    gcd_bitinteger_i32(a, b)\n}\n\n/// Binary GCD for i32 with signed integer handling (matching Julia's algorithm)\npub fn gcd_bitinteger_i32(ain: i32, bin: i32) -&gt; i32 {\n    if ain == 0 {\n        return bin.abs();\n    }\n    if bin == 0 {\n        return ain.abs();\n    }\n\n    if ain == i32::MIN && ain == bin {\n        panic!(\"gcd({}, {}) overflows\", ain, bin);\n    }\n\n    let zb = bin.unsigned_abs().trailing_zeros() as usize;\n    let mut za = ain.unsigned_abs().trailing_zeros() as usize;\n    let mut a = ain.unsigned_abs();\n    let mut b = bin.unsigned_abs() &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    (b &lt;&lt; k) as i32\n}\n\n/// GCD for i64\npub fn gcd_i64(a: i64, b: i64) -&gt; i64 {\n    gcd_bitinteger_i64(a, b)\n}\n\n/// Binary GCD for i64 with signed integer handling (matching Julia's algorithm)\npub fn gcd_bitinteger_i64(ain: i64, bin: i64) -&gt; i64 {\n    if ain == 0 {\n        return bin.abs();\n    }\n    if bin == 0 {\n        return ain.abs();\n    }\n\n    if ain == i64::MIN && ain == bin {\n        panic!(\"gcd({}, {}) overflows\", ain, bin);\n    }\n\n    let zb = bin.unsigned_abs().trailing_zeros() as usize;\n    let mut za = ain.unsigned_abs().trailing_zeros() as usize;\n    let mut a = ain.unsigned_abs();\n    let mut b = bin.unsigned_abs() &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    (b &lt;&lt; k) as i64\n}\n\n/// GCD for i128\npub fn gcd_i128(a: i128, b: i128) -&gt; i128 {\n    gcd_bitinteger_i128(a, b)\n}\n\n/// Binary GCD for i128 with signed integer handling (matching Julia's algorithm)\npub fn gcd_bitinteger_i128(ain: i128, bin: i128) -&gt; i128 {\n    if ain == 0 {\n        return bin.abs();\n    }\n    if bin == 0 {\n        return ain.abs();\n    }\n\n    if ain == i128::MIN && ain == bin {\n        panic!(\"gcd({}, {}) overflows\", ain, bin);\n    }\n\n    let zb = bin.unsigned_abs().trailing_zeros() as usize;\n    let mut za = ain.unsigned_abs().trailing_zeros() as usize;\n    let mut a = ain.unsigned_abs();\n    let mut b = bin.unsigned_abs() &gt;&gt; zb;\n    let k = za.min(zb);\n\n    while a != 0 {\n        a &gt;&gt;= za;\n        let absd = if a &gt;= b { a - b } else { b - a };\n        let diff = absd;\n        za = diff.trailing_zeros() as usize;\n        b = a.min(b);\n        a = absd;\n    }\n\n    (b &lt;&lt; k) as i128\n}\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n\n    #[test]\n    fn test_gcd_u64() {\n        assert_eq!(gcd_u64(6, 9), 3);\n        assert_eq!(gcd_u64(6, 0), 6);\n        assert_eq!(gcd_u64(0, 0), 0);\n        assert_eq!(gcd_u64(48, 18), 6);\n        assert_eq!(gcd_u64(17, 13), 1);\n    }\n\n    #[test]\n    fn test_gcd_i64() {\n        assert_eq!(gcd_i64(6, 9), 3);\n        assert_eq!(gcd_i64(6, -9), 3);\n        assert_eq!(gcd_i64(-6, 9), 3);\n        assert_eq!(gcd_i64(-6, -9), 3);\n        assert_eq!(gcd_i64(6, 0), 6);\n        assert_eq!(gcd_i64(0, 0), 0);\n    }\n\n    #[test]\n    fn test_gcd_u32() {\n        assert_eq!(gcd_u32(48, 18), 6);\n        assert_eq!(gcd_u32(100, 25), 25);\n    }\n\n    #[test]\n    fn test_gcd_i32() {\n        assert_eq!(gcd_i32(48, -18), 6);\n        assert_eq!(gcd_i32(-100, 25), 25);\n    }\n}\n\n// Function to approximate pi using probability that two numbers are coprime\nfn calc_pi(n: u64) -&gt; f64 {\n    let mut cnt = 0u64; // Counter for coprime pairs\n    // Loop through all pairs (a, b) where 1 &lt;= a, b &lt;= N\n    for a in 1..=n {\n        for b in 1..=n {\n            // Check if a and b are coprime using the fast binary GCD algorithm\n            if gcd::gcd_u64(a, b) == 1 {\n                cnt += 1;  // Increment counter if coprime\n            }\n        }\n    }\n    // Probability that two numbers are coprime\n    let prob = cnt as f64 / (n as f64 * n as f64);\n    // Approximate pi using the formula: pi ≈ sqrt(6 / prob)\n    (6.0 / prob).sqrt()\n}\n\n// Main function to run the pi approximation\nfn main() {\n    let n = 10000u64;   // Number limit for coprimality checking\n    let start = std::time::Instant::now();\n    let pi = calc_pi(n); // Approximate pi\n    let duration = start.elapsed();\n    println!(\"calcPi: {:?}\", duration);\n    println!(\"N: {}\", n);   // Output N\n    println!(\"pi: {}\", pi); // Output approximation of pi\n}\nResult\nrustc -C opt-level=3 gcd.rs && ./gcd\ncalcPi: 1.2510425s\nN: 10000\npi: 3.141534239016629"
+  },
+  {
+    "objectID": "slides/slide.html#advanced-topics",
+    "href": "slides/slide.html#advanced-topics",
+    "title": "Introduction to Coding Agents",
+    "section": "Advanced topics",
+    "text": "Advanced topics"
+  },
+  {
+    "objectID": "slides/slide.html#binary-gcd-algorithm-はさらに速くすることができる",
+    "href": "slides/slide.html#binary-gcd-algorithm-はさらに速くすることができる",
+    "title": "Introduction to Coding Agents",
+    "section": "Binary GCD Algorithm はさらに速くすることができる",
+    "text": "Binary GCD Algorithm はさらに速くすることができる\nExercise\n\nBinary GCD Algorithm をさらに高速化せよ (1.45 -&gt; 1.07 seconds on Julia)\n\nHint\n\nBinary GCD Algorithm を Rust で実装し，実行時間を計測せよ\nRust の実装は Julia より速い場合，Rust の実行ファイルを読み込んで Julia の @code_native マクロが出力する機械語と比べよ\n命令数が少ないと実行速度が向上するので比較結果を Julia のコードにフィードバックせよ"
+  },
+  {
+    "objectID": "slides/slide.html#answer-1",
+    "href": "slides/slide.html#answer-1",
+    "title": "Introduction to Coding Agents",
+    "section": "Answer",
+    "text": "Answer\n\nOpus 4.5 generated this!\n\nRust\nBenchmark:\nRun 1: 1.05132725s  pi=3.141534239016629\nRun 2: 1.0358485s  pi=3.141534239016629\nRun 3: 1.034275125s  pi=3.141534239016629\nJulia\n$ julia src/main.jl\nRunning tests...\nAll tests passed!\n\nBenchmark:\nRun 1: 1.072994208s  pi=3.141534239016629\nRun 2: 1.07328325s  pi=3.141534239016629\nRun 3: 1.072947583s  pi=3.141534239016629"
+  },
+  {
+    "objectID": "slides/slide.html#another-example",
+    "href": "slides/slide.html#another-example",
+    "title": "Introduction to Coding Agents",
+    "section": "Another example",
+    "text": "Another example\nWhat is the expected number of random numbers (generated uniformly) such that their sum of numbers exceeds one? (一様分布に従う乱数を何個足せば合計が1を超えるか？その期待値は？)\nRefer this discussion on MathOverflow.\n練習問題\n数値計算のプログラムを書いてみよう．色々なプログラミング言語でトライしてみよう"
+  },
+  {
+    "objectID": "slides/slide.html#answer-julia",
+    "href": "slides/slide.html#answer-julia",
+    "title": "Introduction to Coding Agents",
+    "section": "Answer (Julia)",
+    "text": "Answer (Julia)\nusing Random: Xoshiro, AbstractRNG\n\nfunction count_upto_one(rng::AbstractRNG)\n    counter = 0\n    accumulated = 0.0\n    while true\n        accumulated += rand(rng)\n        counter += 1\n        accumulated &gt;= 1.0 && break\n    end\n    return counter\nend\n\nfunction main(n_trial::Integer)\n    rng = Xoshiro(rand(UInt64))\n    total_count = 0\n    for _ in 1:n_trial\n        total_count += count_upto_one(rng)\n    end\n    println(total_count / n_trial)\nend\n\n@time main(500_000_000)"
+  },
+  {
+    "objectID": "slides/slide.html#odat-se-とは",
+    "href": "slides/slide.html#odat-se-とは",
+    "title": "Introduction to Coding Agents",
+    "section": "ODAT-SE とは",
+    "text": "ODAT-SE とは\nOpen Data Analysis Tool for Science and Engineering (ODAT-SE)\n\n順問題ソルバーに探索アルゴリズムを適用して最適解を探すフレームワーク\n元々は 2DMAT という 2 次元物質の構造（原子位置など）解析ソフトウェア\n\nVersion 3 から順問題ソルバーと探索アルゴリズムをモジュール化した汎用データ解析プラットフォームに\n\n順問題ソルバー: TRHEPD / 表面X線回折 (sxrd) / 低速電子線回折 (leed)．ユーザ定義も可能\n探索アルゴリズム: Nelder-Mead 法・グリッド探索・ベイズ最適化・レプリカ交換モンテカルロ法・ポピュレーションアニーリング"
+  },
+  {
+    "objectID": "slides/slide.html#odat-se-逆問題としての定式化",
+    "href": "slides/slide.html#odat-se-逆問題としての定式化",
+    "title": "Introduction to Coding Agents",
+    "section": "ODAT-SE: 逆問題としての定式化",
+    "text": "ODAT-SE: 逆問題としての定式化\n実験データ解析では m 次元データ D から n 次元パラメータ X を求めたい:\n\n例: D = 回折強度，X = 2 次元材料の原子位置\n順問題ソルバー D_cal: X から D を計算する（D = D_cal(X)）\n逆問題: D が与えられたとき，目的関数\n\\[F(X; D) = d(D_{\\mathrm{cal}}(X),\\ D)\\]\nを最小化する X を求める（d は距離関数，例: ユークリッド距離）\n\nODAT-SE は「順問題ソルバーを提供するモジュール」と「逆問題を解く探索アルゴリズムのモジュール」から構成される．"
+  },
+  {
+    "objectID": "slides/slide.html#odat-se-のインストールと実行例",
+    "href": "slides/slide.html#odat-se-のインストールと実行例",
+    "title": "Introduction to Coding Agents",
+    "section": "ODAT-SE のインストールと実行例",
+    "text": "ODAT-SE のインストールと実行例\n$ mkdir path/to/new-project && cd path/to/new-project\n$ uv init\n$ uv add ODAT-SE scipy\n$ uv run odatse --help\nチュートリアルにある Nelder-Mead 法による Himmelblau 関数の最小値探索（本リポジトリの odat-se-agent/ で再現できる）:\n$ uv run odatse sample/analytical/minsearch/input.toml\neval: x=[0.375 0.375], fun=151.96923828125\n...\neval: x=[2.99996696 1.99999734], fun=4.2278370361994904e-08\nOptimization terminated successfully.\n         Current function value: 0.000000\n         Iterations: 40"
+  },
+  {
+    "objectID": "slides/slide.html#odat-se-結果の可視化",
+    "href": "slides/slide.html#odat-se-結果の可視化",
+    "title": "Introduction to Coding Agents",
+    "section": "ODAT-SE: 結果の可視化",
+    "text": "ODAT-SE: 結果の可視化\n実行すると ./output/0/res.txt などが得られる．用意しておいたスクリプトで可視化:\n$ uv run scripts/plot_himmelblau.py --xcol=1 --ycol=2 output/0/SimplexData.txt\n\n初期値 (0, 0) から (3, 2) に点列が到達する様子が res.pdf として出力される\nNelder-Mead 法以外のアルゴリズムは下記を参照:\n\nODAT-SE チュートリアル\nODAT-SE ミーティング チュートリアル資料 (PDF)"
+  },
+  {
+    "objectID": "slides/slide.html#odat-se-claude-code-カスタム順問題ソルバー",
+    "href": "slides/slide.html#odat-se-claude-code-カスタム順問題ソルバー",
+    "title": "Introduction to Coding Agents",
+    "section": "ODAT-SE × Claude Code: カスタム順問題ソルバー",
+    "text": "ODAT-SE × Claude Code: カスタム順問題ソルバー\n公式チュートリアルでは Booth 関数の最適化に ODAT-SE 本体の書き換えが必要．\n→ そんなのは嫌だ!!! と考える人のために\n→ カスタム Solver のアプローチを Claude Code にお願いする:\n# これはプロンプトです\n\nhttps://.../tutorial/solver_simple.html によると，Booth関数の最適化を行うために\nODAT-SE 本体のコードを書き直さなければいけない．そんなのは嫌だ．\n\nhttps://.../customize/solver.html にあるようにカスタム Solver による方法の\nアプローチを利用したい．Booth 関数を試すサンプルとして提供したい．\nこれで booth.py が生成される．可視化も同様に:\n$ uv run python scripts/plot_booth.py --xcol 1 --ycol 2 --skip 1 \\\n    --output res_booth.png output_booth/0/SimplexData.txt\nドキュメントの URL を渡して「やりたいこと・やりたくないこと」を書くだけでよい．"
+  },
+  {
+    "objectID": "handouts/preparation.html",
+    "href": "handouts/preparation.html",
+    "title": "Introduction to Coding Agents",
+    "section": "",
+    "text": "AI を用いたコーディングをする以前に，環境構築をする必要があります．\n\nGit, GitHub 周り git, gh\nPython 周り uv\nJulia 周り julia\nRust 周り cargo/rustc\nNode.js 周り node/npm/npx\nDocker 周り docker, devcontainer\nその他コマンド tmux, htop, btm を入れていく\nAI Agent の導入 claude, codex, cursor, opencode"
+  },
+  {
+    "objectID": "handouts/preparation.html#環境構築",
+    "href": "handouts/preparation.html#環境構築",
+    "title": "Introduction to Coding Agents",
+    "section": "",
+    "text": "AI を用いたコーディングをする以前に，環境構築をする必要があります．\n\nGit, GitHub 周り git, gh\nPython 周り uv\nJulia 周り julia\nRust 周り cargo/rustc\nNode.js 周り node/npm/npx\nDocker 周り docker, devcontainer\nその他コマンド tmux, htop, btm を入れていく\nAI Agent の導入 claude, codex, cursor, opencode"
+  },
+  {
+    "objectID": "handouts/preparation.html#注意事項",
+    "href": "handouts/preparation.html#注意事項",
+    "title": "Introduction to Coding Agents",
+    "section": "注意事項",
+    "text": "注意事項\n\nLinux/WSL ユーザは管理者権限を持っているものとする(自分のマシンとか).\nmacOS ユーザは Homebrew を使用する.\nWindows ユーザは Winget を使用する.\n\nWindows 11 であれば PowerShell を開けば winget が使える.\nwt で Windows Terminal を開けば PowerShell が使える.\n\nNix のようなパッケージマネージャを知っている人はこの講義の対象者ではないので勝手に環境構築をして遊ぶこと．\nすでに環境構築ができている方は読み流してよい．あくまでも参考程度に読んでほしい．\nWindows 環境で開発環境を整えるのは茨の道であるので，可能であれば Linux/WSL を使用すること．\n\n\n\nWSL を導入する方法\nWindows 11 であれば PowerShell を開けば WSL を経由することで Linux 環境を構築することができる．\nwsl.exe --install Ubuntu-24.04\nPC 自体を再起動してから Ubuntu-24.04 をインストールする．"
+  },
+  {
+    "objectID": "handouts/preparation.html#git-のインストール",
+    "href": "handouts/preparation.html#git-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "Git のインストール",
+    "text": "Git のインストール\nバージョン管理システムである Git をインストールする．コマンドは git. なお，コミットメッセージを手動で書いたり，ファイルの行単位でコミットの操作を行う場合には tig を使用すると便利である．\nLinux/WSL\nsudo apt-get install git tig\nmacOS\nbrew install git tig\nWindows\nwinget install --id Git.Git --source winget\nWindows ユーザは上記のコマンドで自動的に tig もインストールされる．\nコミットする際には誰が行ったかを記録するメタデータを設定する必要がある．そのために名前とメールアドレスを設定する必要がある．\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"your.email@example.com\""
+  },
+  {
+    "objectID": "handouts/preparation.html#github-cli-gh-のインストール",
+    "href": "handouts/preparation.html#github-cli-gh-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "GitHub CLI gh のインストール",
+    "text": "GitHub CLI gh のインストール\nGit で管理されているリポジトリをホストするサービスとして GitHub がある．GitHub ではリポジトリを管理するための CLI が提供されている．コマンドは gh. インストール方法は https://cli.github.com/ の案内に従う．\nLinux/WSL\n(type -p wget &gt;/dev/null || (sudo apt update && sudo apt install wget -y)) \\\n    && sudo mkdir -p -m 755 /etc/apt/keyrings \\\n    && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \\\n    && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg &gt; /dev/null \\\n    && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \\\n    && sudo mkdir -p -m 755 /etc/apt/sources.list.d \\\n    && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list &gt; /dev/null \\\n    && sudo apt update \\\n    && sudo apt install gh -y\nmacOS\nbrew install gh\nWindows\nwinget install -e --id GitHub.cli --source winget\ngh auth login で GitHub アカウントと連携する\nこれで，GitHub のサービスを CLI から利用することができる．\nGitHub のセキュリティ向上のために二要素認証を設定するのが望ましい．近年はパスキーを使う方法もサポートされている．"
+  },
+  {
+    "objectID": "handouts/preparation.html#python-のインストール",
+    "href": "handouts/preparation.html#python-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "Python のインストール",
+    "text": "Python のインストール\nMCPサーバを体験するために Python をインストールする．多くの OS ではデフォルトで Python がインストールされているが，pip install ... のようにナイーブに実行するとシステム環境用の Python 環境を汚してしまう恐れがある．そこで Python の仮想環境を作成するために uv を使用する．\nLinux/WSL\nsudo apt-get install curl\ncurl -LsSf https://astral.sh/uv/install.sh | sh\nmacOS\nbrew install curl\ncurl -LsSf https://astral.sh/uv/install.sh | sh\nWindows\nwinget install --id Astral-sh.uv --source winget\n下記のように使用することができる．\n$ mkdir example\n$ cd example\n$ uv init\n$ uv add numpy\n$ uv run &lt;your-script.py&gt;"
+  },
+  {
+    "objectID": "handouts/preparation.html#julia-のインストール",
+    "href": "handouts/preparation.html#julia-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "Julia のインストール",
+    "text": "Julia のインストール\nJulia は高性能な数値計算を行うための言語である．インストール方法は https://julialang.org/downloads/ の案内に従う．\nLinux/WSL/macOS\n$ curl -fsSL https://install.julialang.org | sh\nWindows\nPS&gt; winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore\n下記のように使用することができる．\n$ julia -e 'using Pkg; Pkg.generate(\"MyPkg.jl\")'\n$ cd MyPkg.jl\n$ julia --project -e 'using MyPkg; println(MyPkg.hello(\"Julia\"))'\nHello, Julia\nなお export JULIA_PROJECT=@. を設定すると --project オプションを省略することができる．"
+  },
+  {
+    "objectID": "handouts/preparation.html#rust-のインストール",
+    "href": "handouts/preparation.html#rust-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "Rust のインストール",
+    "text": "Rust のインストール\nLinux/WSL/macOS\nhttps://www.rust-lang.org/tools/install の案内に従う．\ncurl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh\nWindows\nhttps://learn.microsoft.com/ja-jp/windows/dev-environment/rust/setup?tabs=winget の案内に従う．\n管理者権限でPowerShell を開き，以下のコマンドを実行する．\nPS&gt; winget install -e --source winget --id Microsoft.VisualStudio.2022.BuildTools `\n  --accept-source-agreements `\n  --accept-package-agreements `\n  --override \"--wait --passive --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended\"\n通常のPowerShell で以下のコマンドを実行する．\nPS&gt; winget install Rustlang.Rustup --source winget\n動作確認\n$ cargo new hello-world\n$ cd hello-world\n$ cargo run --release\ncargo run --release\n   Compiling hello-world v0.1.0 (path/to/your-workspace/hello-world)\n    Finished `release` profile [optimized] target(s) in 1.38s\n     Running `target/release/hello-world`\nHello, world!\nsrc/main.rs を編集することでコンパイルして実行することができる．"
+  },
+  {
+    "objectID": "handouts/preparation.html#node.js-のインストール",
+    "href": "handouts/preparation.html#node.js-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "Node.js のインストール",
+    "text": "Node.js のインストール\nNodeJS は JavaScript の実行環境であり，npm を使用することで JavaScript のパッケージを管理することができる． 様々なツールは npm 通してインストールすることを要請されることもあるので存在ぐらいは覚えておくとよい．\nインストール方法は https://nodejs.org/ja/download/ の案内に従う．\nLinux/WSL/macOS\n# nvmをダウンロードしてインストールする：\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash\n# シェルを再起動する代わりに実行する\n\\. \"$HOME/.nvm/nvm.sh\"\n# Node.jsをダウンロードしてインストールする：\nnvm install 24\n# Node.jsのバージョンを確認する：\nnode -v # \"v24.21.0\"が表示される。\n# npmのバージョンを確認する：\nnpm -v # \"11.19.0\"が表示される。\nWindows\nPS&gt; winget install --id OpenJS.NodeJS.LTS --source winget\nPS&gt; node -v\nPS&gt; npm -v"
+  },
+  {
+    "objectID": "handouts/preparation.html#その他ベンチコマンドのインストール",
+    "href": "handouts/preparation.html#その他ベンチコマンドのインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "その他ベンチコマンドのインストール",
+    "text": "その他ベンチコマンドのインストール\nこれはこのページを書いた人の趣味であり，必須ではない．CPUの使用率を確認する際は htop, btm, macmon を使用するとよい． macmon は macOS 専用のツールであり, GPU 使用率を監視するために便利である．\nrg は ripgrep の略であり，ファイル内を検索するためのツールである．grep の代わりとして使われる．Agent は rg を使うことが多いので入れておくとよい．\ntmux はターミナルマルチプレクサの役割を果たす． SSH 接続先のセッション管理に便利である．\nLinux/WSL/macOS\nsudo apt-get install tmux htop ripgrep\nmacOS\nbrew install tmux htop rg macmon\nWindows\n参考: psmuxでWindows 11＋PowerShellでtmux by @charon に従い，tmux をインストールする．\nPS&gt; winget install psmux --source winget\nWindows は htop の代わりに btm を使用する．\nPS&gt; winget install Clement.bottom --source winget"
+  },
+  {
+    "objectID": "handouts/preparation.html#docker-のインストール",
+    "href": "handouts/preparation.html#docker-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "Docker のインストール",
+    "text": "Docker のインストール\n\nDocker (docker)\nCodex はユーザからの許可をバイパスするオプションを備えている．たとえば --yolo といったオプションだ．このようなオプションは便利だが 原理的には rm -rf / のような危険なコマンドの実行も許すことになる．このような状況を防ぐためにサンドボックス環境を使うのが望ましい．たとえば Docker が提供するコンテナはマウントするファイルを制御することで制限された範囲で AI Agent を行動させることが可能である．\nOS に応じてインストールすること:\n\nInstall Docker Desktop on Mac\nInstall Docker Engine on Linux(Ubuntu)\nInstall Docker Desktop on Windows\n\n動作確認は下記のコマンドでできる:\n$ docker run --rm hello-world\n\n\nWindows ユーザ向けの注意事項\n\nDocker Desktop を開く\nSettings にいく（Ctrl＋，）でジャンプできる\nResource にいく．下記のようにチェックを入れる．\n\n\n\n\nDocker Desktop Settings"
+  },
+  {
+    "objectID": "handouts/preparation.html#dev-container-のインストール",
+    "href": "handouts/preparation.html#dev-container-のインストール",
+    "title": "Introduction to Coding Agents",
+    "section": "Dev Container のインストール",
+    "text": "Dev Container のインストール\nDev Container は Docker コンテナを使って環境を構築するためのツールである．.devcontainer/devcontainer.json を用意することで環境を構築することができる．本講義では handouts/devcontainer ディレクトリ以下にある環境をアクティベートする際に使用する．\nCursor または VS Code の拡張機能から Dev Container をインストールする．\nhttps://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers\n\n\nCLI 版もある (Optional)\nhttps://code.visualstudio.com/docs/devcontainers/devcontainer-cli を参考にすること．CLI は npm を使用してインストールする．\nLinux/WSL/macOS\n$ curl -fsSL https://raw.githubusercontent.com/devcontainers/cli/main/scripts/install.sh | sh\nPATH 環境変数を次のように編集する\nexport PATH=\"$HOME/.devcontainers/bin:$PATH\"\nWindows ユーザは npm を使用してインストールする．\n$ npm install -g @devcontainers/cli"
+  },
+  {
+    "objectID": "handouts/preparation.html#ai-agent-の導入",
+    "href": "handouts/preparation.html#ai-agent-の導入",
+    "title": "Introduction to Coding Agents",
+    "section": "AI Agent の導入",
+    "text": "AI Agent の導入\nどれか好きなのをインストールすれば良い．基本的に有料プランを前提とするので無料版に関しては説明しない．20ドルプランがあれば十分である．\n\nClaude Code\nhttps://code.claude.com/docs/en/overview を参考にすること\nLinux/WSL/macOS\ncurl -fsSL https://claude.ai/install.sh | bash\nWindows\nirm https://claude.ai/install.ps1 | iex\n\n\nOpenAI Codex\nhttps://learn.chatgpt.com/docs/codex/cli#getting-started を参考にすること\nLinux/WSL/macOS\ncurl -fsSL https://chatgpt.com/codex/install.sh | sh\nWindows\npowershell -ExecutionPolicy ByPass -c \"irm https://chatgpt.com/codex/install.ps1 | iex\"\n\n\nOpenCode\nhttps://opencode.ai/v2/docs を参考にすること\nLinux/WSL/macOS\ncurl -fsSL https://opencode.ai/v2/install | bash\nWindows ユーザは Download a standalone CLI binary for your platform. からバイナリをダウンロードして使う\n\n\nCursor\nhttps://cursor.com/download からダウンロードしてインストールする．\n\n\nVS Code\nhttps://code.visualstudio.com/download からダウンロードしてインストールする．\nGitHub Copilot を通して AI Agent を利用することができる．\n大学生や大学の教職員は以下の案内に従い，GitHub Copilot を有効にすることができる．\n\nhttps://docs.github.com/ja/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students\nhttps://docs.github.com/ja/education/about-github-education/github-education-for-teachers/about-github-education-for-teachers"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Claude Code Getting started by SatoshiTerasaki",
+    "section": "",
+    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+  },
+  {
+    "objectID": "index.html#description",
+    "href": "index.html#description",
+    "title": "Claude Code Getting started by SatoshiTerasaki",
+    "section": "",
+    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+  },
+  {
+    "objectID": "index.html#handouts",
+    "href": "index.html#handouts",
+    "title": "Claude Code Getting started by SatoshiTerasaki",
+    "section": "Handouts",
+    "text": "Handouts\n\nSlide\nPreparation"
+  },
+  {
+    "objectID": "index.html#appendix",
+    "href": "index.html#appendix",
+    "title": "Claude Code Getting started by SatoshiTerasaki",
+    "section": "Appendix",
+    "text": "Appendix\nThis website is built with Quarto. This website may be used freely for educational and research purposes.\n\nHow to view the website locally\nDownload Quarto from here to use the quarto command. Then, just run:\n$ cd path/to/this/directory\n$ quarto preview"
+  }
+]
