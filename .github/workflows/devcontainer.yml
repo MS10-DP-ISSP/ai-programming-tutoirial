@@ -1,0 +1,38 @@
+name: Dev Containers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "handouts/devcontainer/**"
+      - ".github/workflows/devcontainer.yml"
+  pull_request:
+    paths:
+      - "handouts/devcontainer/**"
+      - ".github/workflows/devcontainer.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: claude
+            check: claude --version
+          - project: codex
+            check: codex --version
+          - project: opencode
+            check: opencode --version
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+      - name: Install Dev Container CLI
+        run: npm install -g @devcontainers/cli
+      - name: Build and start the dev container
+        run: devcontainer up --workspace-folder handouts/devcontainer/${{ matrix.project }}
+      - name: Check the CLI is installed
+        run: devcontainer exec --workspace-folder handouts/devcontainer/${{ matrix.project }} ${{ matrix.check }}

@@ -1,0 +1,46 @@
+name: MCP projects
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "handouts/mcp/**"
+      - ".github/workflows/mcp.yml"
+  pull_request:
+    paths:
+      - "handouts/mcp/**"
+      - ".github/workflows/mcp.yml"
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: handouts/mcp/hello
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Build package
+        run: uv build
+      - name: Call the hello tool via client.py
+        run: uv run --locked python client.py | tee out.txt && grep -q "Hello, Yamada Taro!" out.txt
+
+  mnist:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [web_claude, web_codex]
+    defaults:
+      run:
+        working-directory: handouts/mcp/mnist/${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Run tests
+        run: uv run --locked pytest
