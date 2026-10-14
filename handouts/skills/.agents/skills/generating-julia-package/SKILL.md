@@ -1,0 +1,135 @@
+---
+name: generating-julia-package
+description: Use when you create a new Julia package or project environment — choosing the layout, writing `Project.toml`/`src`, generating a UUID, adding dependencies — or prepare a package for registration
+---
+
+# Creating a Julia Package
+
+## Project Environment
+
+If you want to create a simple script that depends on external libraries, you should create a "project environment". This means making a `Project.toml` file like the one below.
+
+```toml
+[deps]
+"<Installed Package 1>" = "<UUID for Installed Package 1>"
+"<Installed Package 2>" = "<UUID for Installed Package 2>"
+"<Installed Package 3>" = "<UUID for Installed Package 3>"
+```
+
+To install an external library (for example, `TargetPackage`), run the following in your terminal:
+
+```sh
+julia --project -e 'using Pkg; Pkg.add("TargetPackage")'
+```
+
+## Package Directory
+
+If you want to create a reusable package or a larger scale script, you should create a "package directory".
+
+### Choosing the layout
+
+**Default: in-place layout.** Create `./Project.toml` and `./src/MyPkg.jl` directly in the current working directory, with no subdirectory named after the package. Use this whenever the user asks to "create a package `MyPkg`" without further qualification.
+
+**Opt-in: subdirectory layout.** Only use this when the user explicitly asks for a subdirectory — for example "create the package under a new directory", "サブディレクトリを作って", "`MyPkg/` 配下に作って", or when the user is bootstrapping multiple packages side by side under a single workspace and a subdirectory is necessary to disambiguate them.
+
+Do NOT use `Pkg.generate("MyPkg")` for the in-place layout — it always creates a subdirectory. The in-place layout is the default and must be produced by hand-writing the files (see the steps below).
+
+### In-place layout (default, no subdirectory)
+
+To create `Project.toml` and `src/MyPkg.jl` directly in the current working directory:
+
+1. Generate a UUID for the `uuid` field of `Project.toml`:
+
+   ```sh
+   $ julia -E 'using UUIDs; string(uuid4())'
+   "43d6671a-6eab-408d-9ef9-8f584d9146fb" # Example output.
+   ```
+
+2. Write `./Project.toml` with the package name and the UUID from step 1:
+
+   ```toml
+   name = "MyPkg"
+   uuid = "43d6671a-6eab-408d-9ef9-8f584d9146fb"
+   authors = ["Your Name <you@example.com>"]
+   version = "0.1.0"
+   ```
+
+3. Write `./src/MyPkg.jl` with the module skeleton:
+
+   ```julia
+   module MyPkg
+
+   greet() = "Hello"
+
+   end # module MyPkg
+   ```
+
+4. Verify by loading the package from the current directory:
+
+   ```sh
+   $ julia --project=. -e 'using MyPkg; println(MyPkg.greet())'
+   ```
+
+To add tests next, follow [[testing-julia-package]].
+
+### Generate a complete package template (subdirectory layout only)
+
+The Pkg documentation recommends [PkgTemplates.jl](https://juliaci.github.io/PkgTemplates.jl/stable/)
+for repeatable package scaffolding, including optional docs and CI files. Use it
+when the user asks for a complete new package scaffold in a subdirectory; its
+normal generation workflow creates a package directory:
+
+```julia
+using Pkg
+Pkg.activate(; temp = true)
+Pkg.add("PkgTemplates")
+using PkgTemplates
+
+template = Template(dir = pwd())
+template("MyPkg")
+```
+
+For a minimal scaffold without template plugins, use `Pkg.generate` only when
+the user explicitly requests the subdirectory layout:
+
+```sh
+$ julia -e 'using Pkg; Pkg.generate("MyPkg")'
+```
+
+This will create:
+
+```sh
+$ tree
+.
+└── MyPkg
+    ├── Project.toml
+    └── src
+        └── MyPkg.jl
+
+3 directories, 2 files
+```
+
+## Before registering the package
+
+Registration in the General registry is not automatic; get these in order first.
+
+- **Declare compatibility for every dependency.** Add a `[compat]` section to `Project.toml` with bounds for each dependency (and for `julia`). The registry's automatic merging expects compat entries for dependencies, and Aqua.jl can verify them:
+
+  ```toml
+  [compat]
+  julia = "1.10"
+  SomeDep = "1.2, 2"
+  ```
+
+- **Add quality checks to the test suite.** [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl) runs automatable package checks — method ambiguities, undefined exports, unbound type parameters, stale dependencies, missing compat entries, and type piracy:
+
+  ```julia
+  using Aqua
+  Aqua.test_all(MyPkg)
+  ```
+
+  Add Aqua to the test project (see [[testing-julia-package]]) and declare it there, not in the package's runtime `[deps]`.
+
+- **Run the full test suite**, e.g. `julia --project -e 'using Pkg; Pkg.test()'`; see [[testing-julia-package]] for setup and optional faster workflows.
+
+- **Register** through [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl) — the `@JuliaRegistrator register` comment on a commit or pull request, or the Registrator app. This opens a PR against [General](https://github.com/JuliaRegistries/General); register only once the version, `[compat]` bounds, and tests are green.
