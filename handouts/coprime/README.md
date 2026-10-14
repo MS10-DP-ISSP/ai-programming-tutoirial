@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | [`c/`](c/) | C | ユークリッドの互除法による素朴な実装 |
 | [`js/`](js/) | JavaScript | C 版と同じアルゴリズム |
-| [`jl/`](jl/) | Julia | 素朴な実装 (`naive.jl`)、標準の `gcd` を使う版 (`stein.jl`)、Stein のアルゴリズムを書き換えた版 (`opt.jl`) |
+| [`jl/`](jl/) | Julia | 素朴な実装 (`Naive`)、標準の `gcd` を使う版 (`Stein`)、Stein のアルゴリズムを書き換えた版 (`Opt`) の 3 パッケージ |
 | [`rs/`](rs/) | Rust | Julia 標準の `gcd` (Stein のアルゴリズム) を Rust に移植したもの |
 
 `julia/` は Julia 本体のソースを参照用に置くためのディレクトリで、Git の管理対象外です。
@@ -25,9 +25,10 @@ cd c && bash run.sh
 cd js && node main.js
 
 # Julia
-cd jl && julia naive.jl
-cd jl && julia stein.jl
-cd jl && julia opt.jl
+cd jl && julia --project=Naive -m Naive
+cd jl && julia --project=Stein -m Stein
+cd jl && julia --project=Opt -m Opt
+cd jl && julia --project=Opt -e 'using Pkg; Pkg.test()'
 
 # Rust
 cd rs && cargo run --release
@@ -63,4 +64,4 @@ Stein のアルゴリズムは除算を使わず、2 で割る操作 (右シフ�
 | 4 | | | 3 << 1 = 6 |
 
 `trailing_zeros` は多くの CPU で 1 命令 (x86 の `tzcnt` など) で計算できるので、ループ 1 回あたりの処理はシフト・減算・比較だけで済みます。
-`jl/stein.jl` は Julia 標準の `gcd` を使い、`jl/opt.jl` と `rs/` はこの手順を自前で実装しています。
+`jl/Stein` は Julia 標準の `gcd` を使い、`jl/Opt` と `rs/` はこの手順を自前で実装しています。

@@ -2,16 +2,31 @@
 
 1 以上 N 以下の整数 a, b をランダムに選んだとき、a と b が互いに素になる確率は N → ∞ で 6/π² に近づきます。
 このディレクトリのプログラムは N × N 通りの組を数え上げ、`sqrt(6 / prob)` で π を近似します。
+実装ごとに 1 つのパッケージになっています。
+
+| パッケージ | GCD の実装 |
+| --- | --- |
+| `Naive/` | ユークリッドの互除法 (自作 `mygcd`) |
+| `Stein/` | Julia 標準の `gcd` (Stein のアルゴリズム) |
+| `Opt/` | Unsigned 向けの Stein のアルゴリズムを 16 本 lockstep で進める版 |
 
 ## 実行方法
 
 ```sh
-julia naive.jl   # ユークリッドの互除法 (自作 mygcd)
-julia stein.jl   # Julia 標準の gcd (Stein のアルゴリズム)
-julia opt.jl     # Unsigned 向けの Stein のアルゴリズムを 16 本 lockstep で進める版
+julia --project=Naive -m Naive   # 各パッケージの @main を実行 (Julia 1.12 以降)
+julia --project=Stein -m Stein
+julia --project=Opt -m Opt
 ```
 
-## opt.jl の lockstep 方式
+テストは各パッケージで `Pkg.test()` を実行します。
+
+```sh
+julia --project=Naive -e 'using Pkg; Pkg.test()'
+julia --project=Stein -e 'using Pkg; Pkg.test()'
+julia --project=Opt -e 'using Pkg; Pkg.test()'
+```
+
+## Opt の lockstep 方式
 
 二進 GCD のループ 1 回は `d = a - b` → `trailing_zeros(d)` → シフト → 次の `a` という依存チェーンになっています。
 各命令が直前の結果を待つため、GCD を 1 本ずつ計算すると CPU が一度に複数の命令を発行できても演算器の多くが遊びます。
@@ -27,7 +42,7 @@ julia opt.jl     # Unsigned 向けの Stein のアルゴリズムを 16 本 lock
 - `@nexprs 16` で本体を `x_1, …, x_16` という 16 個の変数に展開し、配列を使わずに全レーンをレジスタに置きます。
 - 16 個に満たない残りの `b` は `mygcd` で 1 つずつ計算します。
 - グループを始める条件は `b0 <= N - 15` です。`b0` は常に 16 で割って 1 余る数で、`typemax(T) - 15` は 16 で割り切れるので、`N = typemax(T)` でも `b0 + 16` はオーバーフローしません。`countcoprime` は任意の `Unsigned` 型を受け取れるので、`UInt8` で N = 0〜255 をすべて試せば型の上限での動作を確かめられます。
-- `calcPi(N::UInt32)` は `UInt32` だけを受け取ります。数えた個数は `Int` (64 ビット) に収まり、確率の分母は `UInt32` 同士の `N * N` が桁あふれしないよう `Float64(N)^2` で計算します。
+- `calcPi(N::PositiveUInt32)` は 1 以上 `typemax(UInt32)` 以下の N だけを受け取ります。`PositiveUInt32(n)` は範囲外の n (0 以下を含む) に対して `ArgumentError` を投げます。N = 0 だと確率が 0 / 0 になるためです。数えた個数は `Int` (64 ビット) に収まり、確率の分母は `UInt32` 同士の `N * N` が桁あふれしないよう `Float64(N)^2` で計算します。
 
 1 グループのコストは 16 本のうち最も遅いレーンで決まるので、早く終わったレーンの分は空回りになります。
 それでも命令を並列に実行できる効果のほうが大きいため、全体では速くなります。

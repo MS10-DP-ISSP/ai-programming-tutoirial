@@ -1,0 +1,10 @@
+name = "Stein"
+uuid = "dd8d185c-b3b5-408b-b318-6a7c884f9032"
+authors = ["Satoshi Terasaki <satoshi-terasaki-1205@g.ecc.u-tokyo.ac.jp>"]
+version = "0.1.0"
+
+[workspace]
+projects = ["test"]
+
+[compat]
+julia = "1.12"

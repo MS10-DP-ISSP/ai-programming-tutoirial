@@ -1,0 +1,6 @@
+[deps]
+Opt = "6641cdc3-4769-4789-9e21-01c08e8eedef"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+Opt = {path = ".."}

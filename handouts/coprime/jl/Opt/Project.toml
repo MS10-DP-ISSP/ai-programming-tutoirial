@@ -1,0 +1,10 @@
+name = "Opt"
+uuid = "6641cdc3-4769-4789-9e21-01c08e8eedef"
+authors = ["Satoshi Terasaki <satoshi-terasaki-1205@g.ecc.u-tokyo.ac.jp>"]
+version = "0.1.0"
+
+[workspace]
+projects = ["test"]
+
+[compat]
+julia = "1.12"

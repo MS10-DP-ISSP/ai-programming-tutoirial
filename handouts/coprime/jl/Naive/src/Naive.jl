@@ -1,3 +1,7 @@
+module Naive
+
+export calcPi
+
 # Function to compute the greatest common divisor (GCD) using the Euclidean algorithm
 function mygcd(a, b)
     # Loop until the remainder is zero
@@ -27,13 +31,12 @@ function calcPi(N)
     return sqrt(6 / prob)
 end
 
-# Main function to run the pi approximation
-function main()
+# Entry point for `julia -m Naive`
+function (@main)(args)
     N = 10000            # Number limit for coprimality checking
     approx_pi = @time calcPi(N) # Approximate pi and time it
     println("N: $(N)")   # Output N
     println("pi: $(approx_pi)") # Output approximation of pi
 end
 
-main() # Call the main function
-
+end # module Naive

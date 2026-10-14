@@ -1,0 +1,6 @@
+[deps]
+Stein = "dd8d185c-b3b5-408b-b318-6a7c884f9032"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+Stein = {path = ".."}

@@ -1,0 +1,6 @@
+[deps]
+Naive = "da62a4a0-4b19-440e-ac76-efeb940a1550"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+Naive = {path = ".."}

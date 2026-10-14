@@ -1,3 +1,7 @@
+module Opt
+
+export PositiveUInt32, calcPi
+
 using Base.Cartesian: @nexprs
 
 # Function to compute the greatest common divisor (GCD) using the binary GCD (Stein's) algorithm
@@ -74,21 +78,32 @@ function countcoprime(N::T) where {T<:Unsigned}
     return cnt
 end
 
+# A positive N that fits in UInt32. N = 0 would give prob = 0 / 0, so the constructor
+# rejects every N <= 0 (and every N > typemax(UInt32)) with an ArgumentError.
+struct PositiveUInt32
+    value::UInt32
+    function PositiveUInt32(n::Integer)
+        1 <= n <= typemax(UInt32) || throw(ArgumentError("N must satisfy 1 <= N <= $(typemax(UInt32)), got $n"))
+        return new(n)
+    end
+end
+
 # Function to approximate pi using probability that two numbers are coprime
-function calcPi(N::UInt32)
-    cnt = countcoprime(N)
-    # Probability that two numbers are coprime (Float64 avoids overflow in N * N)
-    prob = cnt / Float64(N)^2
+function calcPi(N::PositiveUInt32)
+    n = N.value
+    cnt = countcoprime(n)
+    # Probability that two numbers are coprime (Float64 avoids overflow in n * n)
+    prob = cnt / Float64(n)^2
     # Approximate pi using the formula: pi ≈ sqrt(6 / prob)
     return sqrt(6 / prob)
 end
 
-# Main function to run the pi approximation
-function main()
-    N = UInt32(10000)    # Number limit for coprimality checking
+# Entry point for `julia -m Opt`
+function (@main)(args)
+    N = PositiveUInt32(10000)  # Number limit for coprimality checking
     approx_pi = @time calcPi(N) # Approximate pi and time it
-    println("N: $(Int(N))")   # Output N (a UInt32 would be printed in hexadecimal)
+    println("N: $(Int(N.value))")   # Output N (a UInt32 would be printed in hexadecimal)
     println("pi: $(approx_pi)") # Output approximation of pi
 end
 
-main() # Call the main function
+end # module Opt
