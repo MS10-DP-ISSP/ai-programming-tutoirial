@@ -35,7 +35,6 @@ cd rs && cargo test
 ```
 
 C、Julia、Rust 版は `calcPi` の実行時間も表示するので、言語や GCD の実装による速度の違いを比べられます。
-Julia 版の詳しい説明は [`jl/README.md`](jl/README.md) を参照してください。
 
 ## Stein のアルゴリズム (binary GCD)
 
