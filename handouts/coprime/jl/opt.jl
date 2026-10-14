@@ -13,9 +13,11 @@ function mygcd(a::T, b::T) where {T<:Unsigned}
     # Loop until both values are equal
     while a != b
         d = a - b                     # Wraps around, but has the same trailing zeros as |a - b|
-        absd = max(a, b) - min(a, b)  # |a - b|, which is even and nonzero
+        absd = ifelse(a > b, d, -d)   # |a - b|, which is even and nonzero
         b = min(a, b)                 # Keep the smaller value
-        a = absd >> trailing_zeros(d) # Remove all factors of two from |a - b|
+        # Remove all factors of two from |a - b|.
+        # d != 0, so the shift is less than the bit width; masking tells the compiler this.
+        a = absd >> (trailing_zeros(d) & (8sizeof(T) - 1))
     end
     return a << k  # Restore the common power of two
 end

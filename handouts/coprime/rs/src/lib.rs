@@ -21,22 +21,29 @@ fn throw_gcd_overflow<T: Display>(a: T, b: T) -> ! {
     panic!("gcd({}, {}) overflows", a, b)
 }
 
-/// Binary GCD on unsigned values, following Julia's `_gcd`.
+/// Binary GCD on nonzero unsigned values.
+///
+/// Unlike Julia's `_gcd`, both operands are kept odd inside the loop and the loop
+/// stops when they become equal. The wrapping difference has the same number of
+/// trailing zeros as the absolute difference, so `trailing_zeros` does not have to
+/// wait for `abs_diff`.
 macro_rules! stein {
     ($a:expr, $b:expr) => {{
-        let (mut a, b) = ($a, $b);
+        let (a, b) = ($a, $b);
+        let za = a.trailing_zeros();
         let zb = b.trailing_zeros();
-        let mut za = a.trailing_zeros();
-        let mut b = b >> zb;
         let k = za.min(zb);
-        while a != 0 {
-            a >>= za;
-            let absd = a.abs_diff(b);
-            za = absd.trailing_zeros();
+        let mut a = a >> za;
+        let mut b = b >> zb;
+        while a != b {
+            let d = a.wrapping_sub(b);
+            // |a - b| selected from d: one `subs` + `cneg`. `abs_diff` becomes
+            // `umax` + `umin` + `sub` when the CPU has `umax`/`umin` (e.g. -C target-cpu=native).
+            let absd = if a > b { d } else { d.wrapping_neg() };
             b = a.min(b);
-            a = absd;
+            a = absd >> d.trailing_zeros();
         }
-        b << k
+        a << k
     }};
 }
 
