@@ -9,7 +9,7 @@ title: "生成AIプログラミング講習会"
 ## Handouts
 
 - [Slide](slides/slide.qmd)
-	- [Appendix](settings_json.qmd)
+	- [Appendix](slides/settings_json.qmd)
 - [Preparation](handouts/preparation.qmd)
 
 ## ローカル環境で資料を閲覧
