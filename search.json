@@ -525,6 +525,27 @@
     "text": "ODAT-SE × Claude Code: カスタム順問題ソルバー\n公式チュートリアルでは Booth 関数の最適化に ODAT-SE 本体の書き換えが必要．\n→ そんなのは嫌だ!!! と考える人のために\n→ カスタム Solver のアプローチを Claude Code にお願いする:\n# これはプロンプトです\n\nhttps://.../tutorial/solver_simple.html によると，Booth関数の最適化を行うために\nODAT-SE 本体のコードを書き直さなければいけない．そんなのは嫌だ．\n\nhttps://.../customize/solver.html にあるようにカスタム Solver による方法の\nアプローチを利用したい．Booth 関数を試すサンプルとして提供したい．\nこれで booth.py が生成される．可視化も同様に:\n$ uv run python scripts/plot_booth.py --xcol 1 --ycol 2 --skip 1 \\\n    --output res_booth.png output_booth/0/SimplexData.txt\nドキュメントの URL を渡して「やりたいこと・やりたくないこと」を書くだけでよい．"
   },
   {
+    "objectID": "slides/slide.html#研究室の資産の整備",
+    "href": "slides/slide.html#研究室の資産の整備",
+    "title": "Introduction to Coding Agents",
+    "section": "研究室の資産の整備",
+    "text": "研究室の資産の整備\n\nGit などのバージョン管理ツールを使おう\nGitHub/GitLab などのホスティングサービスを使おう\nOrganization を作ってソフトウェア資産をまとめよう\n\nこれはおもに PI とか 先生と呼ばれる方のお仕事\n\nOrganization に研究で使ったソフトウェアを集約しよう\n公開できるものは公開しよう\n\n今のところ，public repository に対しては GitHub Actions は無料\n\n自動テストを無料で動かすことができる"
+  },
+  {
+    "objectID": "slides/slide.html#各自のソフトウェアを整備",
+    "href": "slides/slide.html#各自のソフトウェアを整備",
+    "title": "Introduction to Coding Agents",
+    "section": "各自のソフトウェアを整備",
+    "text": "各自のソフトウェアを整備\n\nドキュメントを書いてもらおう(READMEの整備)\n\nコマンドを実行すればビルド・コンパイルが通るか\n簡単な例が試せるように整えよう\n理論とコードの対応表があると良いかも\n自分がいなくなっても開発が続けるような引継ぎ資料があると良い\n\n単体テストを書こう\n\nx を入力したら y = f(x) が返ってくることを確認するコードを書く\n\ndocstring を整備しよう\n自分のワークフローを整備・言語化しよう"
+  },
+  {
+    "objectID": "slides/slide.html#ai-に任せてみよう",
+    "href": "slides/slide.html#ai-に任せてみよう",
+    "title": "Introduction to Coding Agents",
+    "section": "AI に任せてみよう",
+    "text": "AI に任せてみよう\n\n潜在的なバグを見つけて修正してもらおう\nドキュメントを整備してもらおう\n\n日本語から英語へ翻訳してもらう\n\nパフォーマンスが欲しいところを最適化してもらおう\n\n配列アクセスに対してメモリレイアウトの不連続アクセスを改善する\n自前 for loop の代わりに BLAS を使う\nベンチマークスクリプトを作る\n高速な言語に切り替える"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "AI programming tutorial",

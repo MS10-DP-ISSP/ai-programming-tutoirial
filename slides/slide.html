@@ -3376,8 +3376,59 @@ Rust
 <span id="cb58-2"><a></a>    <span class="at">--output</span> res_booth.png output_booth/0/SimplexData.txt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>ドキュメントの URL を渡して「やりたいこと・やりたくないこと」を書くだけでよい．</p>
 </section>
-<section class="slide level2">
-
+<section id="研究室の資産の整備" class="slide level2">
+<h2>研究室の資産の整備</h2>
+<ul>
+<li>Git などのバージョン管理ツールを使おう</li>
+<li>GitHub/GitLab などのホスティングサービスを使おう</li>
+<li>Organization を作ってソフトウェア資産をまとめよう
+<ul>
+<li>これはおもに PI とか 先生と呼ばれる方のお仕事</li>
+</ul></li>
+<li>Organization に研究で使ったソフトウェアを集約しよう</li>
+<li>公開できるものは公開しよう
+<ul>
+<li>今のところ，public repository に対しては GitHub Actions は無料
+<ul>
+<li>自動テストを無料で動かすことができる</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="各自のソフトウェアを整備" class="slide level2">
+<h2>各自のソフトウェアを整備</h2>
+<ul>
+<li>ドキュメントを書いてもらおう(READMEの整備)
+<ul>
+<li>コマンドを実行すればビルド・コンパイルが通るか</li>
+<li>簡単な例が試せるように整えよう</li>
+<li>理論とコードの対応表があると良いかも</li>
+<li>自分がいなくなっても開発が続けるような引継ぎ資料があると良い</li>
+</ul></li>
+<li>単体テストを書こう
+<ul>
+<li><code>x</code> を入力したら <code>y = f(x)</code> が返ってくることを確認するコードを書く</li>
+</ul></li>
+<li>docstring を整備しよう</li>
+<li>自分のワークフローを整備・言語化しよう</li>
+</ul>
+</section>
+<section id="ai-に任せてみよう" class="slide level2">
+<h2>AI に任せてみよう</h2>
+<ul>
+<li>潜在的なバグを見つけて修正してもらおう</li>
+<li>ドキュメントを整備してもらおう
+<ul>
+<li>日本語から英語へ翻訳してもらう</li>
+</ul></li>
+<li>パフォーマンスが欲しいところを最適化してもらおう
+<ul>
+<li>配列アクセスに対してメモリレイアウトの不連続アクセスを改善する</li>
+<li>自前 for loop の代わりに BLAS を使う</li>
+<li>ベンチマークスクリプトを作る</li>
+<li>高速な言語に切り替える</li>
+</ul></li>
+</ul>
 
 
 </section></section>
