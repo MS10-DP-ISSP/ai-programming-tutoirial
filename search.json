@@ -490,6 +490,27 @@
     "text": "Answer (Julia)\nusing Random: Xoshiro, AbstractRNG\n\nfunction count_upto_one(rng::AbstractRNG)\n    counter = 0\n    accumulated = 0.0\n    while true\n        accumulated += rand(rng)\n        counter += 1\n        accumulated &gt;= 1.0 && break\n    end\n    return counter\nend\n\nfunction main(n_trial::Integer)\n    rng = Xoshiro(rand(UInt64))\n    total_count = 0\n    for _ in 1:n_trial\n        total_count += count_upto_one(rng)\n    end\n    println(total_count / n_trial)\nend\n\n@time main(500_000_000)"
   },
   {
+    "objectID": "slides/slide.html#研究室の資産の整備",
+    "href": "slides/slide.html#研究室の資産の整備",
+    "title": "Introduction to Coding Agents",
+    "section": "研究室の資産の整備",
+    "text": "研究室の資産の整備\n\nGit などのバージョン管理ツールを使おう\nGitHub/GitLab などのホスティングサービスを使おう\nOrganization を作ってソフトウェア資産をまとめよう\n\nこれはおもに PI とか 先生と呼ばれる方のお仕事\n\nOrganization に研究で使ったソフトウェアを集約しよう\n公開できるものは公開しよう\n\n今のところ，public repository に対しては GitHub Actions は無料\n\n自動テストを無料で動かすことができる"
+  },
+  {
+    "objectID": "slides/slide.html#各自のソフトウェアを整備",
+    "href": "slides/slide.html#各自のソフトウェアを整備",
+    "title": "Introduction to Coding Agents",
+    "section": "各自のソフトウェアを整備",
+    "text": "各自のソフトウェアを整備\n\nドキュメントを書いてもらおう(READMEの整備)\n\nコマンドを実行すればビルド・コンパイルが通るか\n簡単な例が試せるように整えよう\n理論とコードの対応表があると良いかも\n自分がいなくなっても開発が続けるような引継ぎ資料があると良い\n\n単体テストを書こう\n\nx を入力したら y = f(x) が返ってくることを確認するコードを書く\n\ndocstring を整備しよう\n自分のワークフローを整備・言語化しよう"
+  },
+  {
+    "objectID": "slides/slide.html#ai-に任せてみよう",
+    "href": "slides/slide.html#ai-に任せてみよう",
+    "title": "Introduction to Coding Agents",
+    "section": "AI に任せてみよう",
+    "text": "AI に任せてみよう\n\n潜在的なバグを見つけて修正してもらおう\nドキュメントを整備してもらおう\n\n日本語から英語へ翻訳してもらう\n\nパフォーマンスが欲しいところを最適化してもらおう\n\n配列アクセスに対してメモリレイアウトの不連続アクセスを改善する\n自前 for loop の代わりに BLAS を使う\nベンチマークスクリプトを作る\n高速な言語に切り替える"
+  },
+  {
     "objectID": "slides/slide.html#odat-se-とは",
     "href": "slides/slide.html#odat-se-とは",
     "title": "Introduction to Coding Agents",
@@ -525,53 +546,32 @@
     "text": "ODAT-SE × Claude Code: カスタム順問題ソルバー\n公式チュートリアルでは Booth 関数の最適化に ODAT-SE 本体の書き換えが必要．\n→ そんなのは嫌だ!!! と考える人のために\n→ カスタム Solver のアプローチを Claude Code にお願いする:\n# これはプロンプトです\n\nhttps://.../tutorial/solver_simple.html によると，Booth関数の最適化を行うために\nODAT-SE 本体のコードを書き直さなければいけない．そんなのは嫌だ．\n\nhttps://.../customize/solver.html にあるようにカスタム Solver による方法の\nアプローチを利用したい．Booth 関数を試すサンプルとして提供したい．\nこれで booth.py が生成される．可視化も同様に:\n$ uv run python scripts/plot_booth.py --xcol 1 --ycol 2 --skip 1 \\\n    --output res_booth.png output_booth/0/SimplexData.txt\nドキュメントの URL を渡して「やりたいこと・やりたくないこと」を書くだけでよい．"
   },
   {
-    "objectID": "slides/slide.html#研究室の資産の整備",
-    "href": "slides/slide.html#研究室の資産の整備",
-    "title": "Introduction to Coding Agents",
-    "section": "研究室の資産の整備",
-    "text": "研究室の資産の整備\n\nGit などのバージョン管理ツールを使おう\nGitHub/GitLab などのホスティングサービスを使おう\nOrganization を作ってソフトウェア資産をまとめよう\n\nこれはおもに PI とか 先生と呼ばれる方のお仕事\n\nOrganization に研究で使ったソフトウェアを集約しよう\n公開できるものは公開しよう\n\n今のところ，public repository に対しては GitHub Actions は無料\n\n自動テストを無料で動かすことができる"
-  },
-  {
-    "objectID": "slides/slide.html#各自のソフトウェアを整備",
-    "href": "slides/slide.html#各自のソフトウェアを整備",
-    "title": "Introduction to Coding Agents",
-    "section": "各自のソフトウェアを整備",
-    "text": "各自のソフトウェアを整備\n\nドキュメントを書いてもらおう(READMEの整備)\n\nコマンドを実行すればビルド・コンパイルが通るか\n簡単な例が試せるように整えよう\n理論とコードの対応表があると良いかも\n自分がいなくなっても開発が続けるような引継ぎ資料があると良い\n\n単体テストを書こう\n\nx を入力したら y = f(x) が返ってくることを確認するコードを書く\n\ndocstring を整備しよう\n自分のワークフローを整備・言語化しよう"
-  },
-  {
-    "objectID": "slides/slide.html#ai-に任せてみよう",
-    "href": "slides/slide.html#ai-に任せてみよう",
-    "title": "Introduction to Coding Agents",
-    "section": "AI に任せてみよう",
-    "text": "AI に任せてみよう\n\n潜在的なバグを見つけて修正してもらおう\nドキュメントを整備してもらおう\n\n日本語から英語へ翻訳してもらう\n\nパフォーマンスが欲しいところを最適化してもらおう\n\n配列アクセスに対してメモリレイアウトの不連続アクセスを改善する\n自前 for loop の代わりに BLAS を使う\nベンチマークスクリプトを作る\n高速な言語に切り替える"
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "AI programming tutorial",
+    "title": "生成AIプログラミング講習会",
     "section": "",
-    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+    "text": "この Web サイトは 生成AIプログラミング講習会 に対応する講義資料をまとめたページである．"
   },
   {
     "objectID": "index.html#description",
     "href": "index.html#description",
-    "title": "AI programming tutorial",
+    "title": "生成AIプログラミング講習会",
     "section": "",
-    "text": "ソフトウェア開発の文脈でAIエージェントを使ってみる．"
+    "text": "この Web サイトは 生成AIプログラミング講習会 に対応する講義資料をまとめたページである．"
   },
   {
     "objectID": "index.html#handouts",
     "href": "index.html#handouts",
-    "title": "AI programming tutorial",
+    "title": "生成AIプログラミング講習会",
     "section": "Handouts",
     "text": "Handouts\n\nSlide\n\nAppendix\n\nPreparation"
   },
   {
-    "objectID": "index.html#appendix",
-    "href": "index.html#appendix",
-    "title": "AI programming tutorial",
-    "section": "Appendix",
-    "text": "Appendix\nThis website is built with Quarto. This website may be used freely for educational and research purposes.\n\nHow to view the website locally\nDownload Quarto from here to use the quarto command. Then, just run:\n$ cd path/to/this/directory\n$ quarto preview"
+    "objectID": "index.html#ローカル環境で資料を閲覧",
+    "href": "index.html#ローカル環境で資料を閲覧",
+    "title": "生成AIプログラミング講習会",
+    "section": "ローカル環境で資料を閲覧",
+    "text": "ローカル環境で資料を閲覧\nQuarto を ここから インストールします． これにより quarto コマンドが使えるようになります．\nターミナルを開いて下記を実行します．\n$ git clone https://github.com/MS10-DP-ISSP/ai-programming-tutoirial.git\n$ cd ai-programming-tutoiria\n$ quarto preview"
   },
   {
     "objectID": "handouts/preparation.html",
@@ -697,7 +697,7 @@
     "href": "slides/settings_json.html#settings.json-の機能",
     "title": "Introduction to Coding Agents",
     "section": "settings.json の機能",
-    "text": "settings.json の機能\n特定のコマンドの実行・ファイルの読み書き・ネットワークのアクセスを制御することができる．\n\"permissions\": {\n  \"allow\": [\n    \"Bash(yarn test:*)\"\n  ],\n  \"deny\": [\n    \"Read(./.env)\",\n    \"Read(./.env.*)\",\n    \"Read(./secrets/**)\",\n    \"Write(./production.config.*)\",\n    \"Bash(git config :*)\",\n    \"Bash(brew install :*)\",\n    \"Bash(rm -rf /*)\",\n    \"Bash(gh repo delete:*)\"\n  ],\n},"
+    "text": "settings.json の機能\n特定のコマンドの実行・ファイルの読み書き・ネットワークのアクセスを制御することができる．\n\"permissions\": {\n  \"allow\": [\n    \"mcp__codegraph__*\",\n    \"Bash(gh pr merge:*)\"\n  ],\n  \"deny\": [\n    \"Read(**/.env)\",\n    \"Read(**/.env.*)\",\n    \"Read(**/secrets/**)\",\n    \"Edit(./production.config.*)\",\n    \"Bash(git config :*)\",\n    \"Bash(brew install :*)\",\n    \"Bash(chmod 777 :*)\",\n    \"Bash(rm -rf /*)\",\n    \"Bash(gh repo delete:*)\"\n  ],\n},"
   },
   {
     "objectID": "slides/settings_json.html#claude-code-とセキュリティ対策関係に有用な資料",

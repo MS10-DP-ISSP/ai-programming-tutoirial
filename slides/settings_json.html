@@ -1131,19 +1131,21 @@ margin-right: 0; }
 <p>特定のコマンドの実行・ファイルの読み書き・ネットワークのアクセスを制御することができる．</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb3-1"><a></a><span class="er">&quot;permissions&quot;:</span> <span class="fu">{</span></span>
 <span id="cb3-2"><a></a>  <span class="dt">&quot;allow&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb3-3"><a></a>    <span class="st">&quot;Bash(yarn test:*)&quot;</span></span>
-<span id="cb3-4"><a></a>  <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb3-5"><a></a>  <span class="dt">&quot;deny&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb3-6"><a></a>    <span class="st">&quot;Read(./.env)&quot;</span><span class="ot">,</span></span>
-<span id="cb3-7"><a></a>    <span class="st">&quot;Read(./.env.*)&quot;</span><span class="ot">,</span></span>
-<span id="cb3-8"><a></a>    <span class="st">&quot;Read(./secrets/**)&quot;</span><span class="ot">,</span></span>
-<span id="cb3-9"><a></a>    <span class="st">&quot;Write(./production.config.*)&quot;</span><span class="ot">,</span></span>
-<span id="cb3-10"><a></a>    <span class="st">&quot;Bash(git config :*)&quot;</span><span class="ot">,</span></span>
-<span id="cb3-11"><a></a>    <span class="st">&quot;Bash(brew install :*)&quot;</span><span class="ot">,</span></span>
-<span id="cb3-12"><a></a>    <span class="st">&quot;Bash(rm -rf /*)&quot;</span><span class="ot">,</span></span>
-<span id="cb3-13"><a></a>    <span class="st">&quot;Bash(gh repo delete:*)&quot;</span></span>
-<span id="cb3-14"><a></a>  <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb3-15"><a></a><span class="fu">}</span><span class="er">,</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-3"><a></a>    <span class="st">&quot;mcp__codegraph__*&quot;</span><span class="ot">,</span></span>
+<span id="cb3-4"><a></a>    <span class="st">&quot;Bash(gh pr merge:*)&quot;</span></span>
+<span id="cb3-5"><a></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-6"><a></a>  <span class="dt">&quot;deny&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-7"><a></a>    <span class="st">&quot;Read(**/.env)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-8"><a></a>    <span class="st">&quot;Read(**/.env.*)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-9"><a></a>    <span class="st">&quot;Read(**/secrets/**)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-10"><a></a>    <span class="st">&quot;Edit(./production.config.*)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-11"><a></a>    <span class="st">&quot;Bash(git config :*)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-12"><a></a>    <span class="st">&quot;Bash(brew install :*)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-13"><a></a>    <span class="st">&quot;Bash(chmod 777 :*)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-14"><a></a>    <span class="st">&quot;Bash(rm -rf /*)&quot;</span><span class="ot">,</span></span>
+<span id="cb3-15"><a></a>    <span class="st">&quot;Bash(gh repo delete:*)&quot;</span></span>
+<span id="cb3-16"><a></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-17"><a></a><span class="fu">}</span><span class="er">,</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="claude-code-とセキュリティ対策関係に有用な資料" class="slide level2">
 <h2>Claude Code とセキュリティ対策関係に有用な資料</h2>
