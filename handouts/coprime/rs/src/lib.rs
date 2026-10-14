@@ -2,6 +2,7 @@
 // Greatest common divisor implementations using Euclidean and Binary GCD algorithms
 
 use std::fmt::Display;
+use std::num::NonZeroU32;
 use std::ops::Rem;
 
 /// Fixed-width integer types (Julia's `BitInteger`).
@@ -204,7 +205,9 @@ fn count_coprime_in(a: u32, lo: u32, hi: u32) -> u64 {
 }
 
 // Function to approximate pi using probability that two numbers are coprime
-pub fn calc_pi(n: u32) -> f64 {
+// n is NonZeroU32: N = 0 would give prob = 0 / 0, so it is rejected by the type.
+pub fn calc_pi(n: NonZeroU32) -> f64 {
+    let n = n.get();
     let cnt = count_coprime_pairs(n);
     // Probability that two numbers are coprime
     let prob = cnt as f64 / (n as f64 * n as f64);

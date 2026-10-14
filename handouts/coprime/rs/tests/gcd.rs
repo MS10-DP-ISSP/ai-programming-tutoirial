@@ -1,4 +1,5 @@
 use rs::*;
+use std::num::NonZeroU32;
 
 #[test]
 fn test_gcd_u64() {
@@ -237,14 +238,14 @@ fn test_generic_gcd_euclid_min_zero_panics() {
 #[test]
 fn test_calc_pi_small() {
     // Coprime pairs in [1,2]^2: (1,1), (1,2), (2,1) -> prob = 3/4
-    assert!((calc_pi(2) - 8.0f64.sqrt()).abs() < 1e-12);
+    assert!((calc_pi(NonZeroU32::new(2).unwrap()) - 8.0f64.sqrt()).abs() < 1e-12);
     // Only pair (1,1) -> prob = 1
-    assert!((calc_pi(1) - 6.0f64.sqrt()).abs() < 1e-12);
+    assert!((calc_pi(NonZeroU32::new(1).unwrap()) - 6.0f64.sqrt()).abs() < 1e-12);
 }
 
 #[test]
 fn test_calc_pi_approximates_pi() {
-    let pi = calc_pi(1000);
+    let pi = calc_pi(NonZeroU32::new(1000).unwrap());
     assert!((pi - std::f64::consts::PI).abs() < 1e-2, "calc_pi(1000) = {pi}");
 }
 
@@ -260,4 +261,11 @@ fn test_count_coprime_pairs_matches_reference() {
         }
         assert_eq!(count_coprime_pairs(n), expected, "n = {n}");
     }
+}
+
+#[test]
+fn test_zero_is_rejected_before_calc_pi() {
+    // calc_pi takes NonZeroU32, so N = 0 is turned into an error when the argument is built.
+    assert!(NonZeroU32::new(0).is_none());
+    assert!(NonZeroU32::try_from(0u32).is_err());
 }
