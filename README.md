@@ -1,5 +1,28 @@
 # ai-programming-tutoirial
 
+## Description
+
+この Web サイトは [生成AIプログラミング講習会](https://indico.nifs.ac.jp/event/105/) に対応する講義資料をまとめたページである．
+
+## Handouts
+
+- [Slide](slides/slide.qmd)
+  - [Appendix](settings_json.qmd)
+- [Preparation](handouts/preparation.qmd)
+
+## ローカル環境で資料を閲覧
+
+Quarto を [ここから](https://quarto.org/docs/download/) インストールします．
+これにより `quarto` コマンドが使えるようになります．
+
+ターミナルを開いて下記を実行します．
+
+```sh
+$ git clone https://github.com/MS10-DP-ISSP/ai-programming-tutoirial.git
+$ cd ai-programming-tutoiria
+$ quarto preview
+```
+
 ## DeckTape でスライドを PDF に出力する
 
 [DeckTape](https://github.com/astefanutti/decktape) をインストールします。
