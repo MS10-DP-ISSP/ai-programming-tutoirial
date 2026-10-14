@@ -1,10 +1,10 @@
 ---
-title: "AI programming tutorial"
+title: "生成AIプログラミング講習会"
 ---
 
 ## Description
 
-ソフトウェア開発の文脈でAIエージェントを使ってみる．
+この Web サイトは [生成AIプログラミング講習会](https://indico.nifs.ac.jp/event/105/) に対応する講義資料をまとめたページである．
 
 ## Handouts
 
@@ -12,16 +12,15 @@ title: "AI programming tutorial"
 	- [Appendix](settings_json.qmd)
 - [Preparation](handouts/preparation.qmd)
 
-## Appendix
+## ローカル環境で資料を閲覧
 
-This website is built with [Quarto](https://quarto.org/).
-This website may be used freely for educational and research purposes.
+Quarto を [ここから](https://quarto.org/docs/download/) インストールします．
+これにより `quarto` コマンドが使えるようになります．
 
-### How to view the website locally
-
-Download Quarto from [here](https://quarto.org/docs/download/) to use the `quarto` command. Then, just run:
+ターミナルを開いて下記を実行します．
 
 ```sh
-$ cd path/to/this/directory
+$ git clone https://github.com/MS10-DP-ISSP/ai-programming-tutoirial.git
+$ cd ai-programming-tutoiria
 $ quarto preview
 ```
