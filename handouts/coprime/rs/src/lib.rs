@@ -141,21 +141,89 @@ typed_gcd! {
     i128 => gcd_i128, gcd_bitinteger_i128;
 }
 
-// Function to approximate pi using probability that two numbers are coprime
-pub fn calc_pi(n: u64) -> f64 {
+/// Number of independent GCDs advanced together in `count_coprime_pairs`.
+const LANES: usize = 16;
+
+/// Count pairs (a, b) with 1 <= a, b <= n and gcd(a, b) == 1.
+///
+/// Every `u32` value of n is handled: the count is at most n^2 < 2^64.
+pub fn count_coprime_pairs(n: u32) -> u64 {
+    (1..=n).map(|a| count_coprime_in(a, 1, n)).sum()
+}
+
+/// Count b with lo <= b <= hi and gcd(a, b) == 1, for a >= 1 and lo >= 1.
+///
+/// The GCDs with b, b+1, ..., b+LANES-1 are advanced one binary GCD step at a
+/// time in lockstep. A single GCD is a chain of dependent instructions; running
+/// independent chains side by side lets the CPU overlap them. A finished lane
+/// (x == y) is frozen until every lane is done.
+fn count_coprime_in(a: u32, lo: u32, hi: u32) -> u64 {
     let mut cnt = 0u64; // Counter for coprime pairs
-    // Loop through all pairs (a, b) where 1 <= a, b <= N
-    for a in 1..=n {
-        for b in 1..=n {
-            // Check if a and b are coprime using the fast binary GCD algorithm
-            if gcd_u64(a, b) == 1 {
-                cnt += 1;  // Increment counter if coprime
+    let za = a.trailing_zeros();
+    let ao = a >> za; // Odd part of a
+    // b0 is u64 so that b0 + LANES does not overflow when hi is close to u32::MAX.
+    let (mut b0, hi) = (lo as u64, hi as u64);
+    while b0 + (LANES as u64 - 1) <= hi {
+        let mut x = [ao; LANES];
+        let mut y = [0u32; LANES];
+        let mut k = [0u32; LANES];
+        for i in 0..LANES {
+            let b = (b0 + i as u64) as u32; // b <= hi fits in u32
+            let zb = b.trailing_zeros();
+            k[i] = za.min(zb); // The common power of two
+            y[i] = b >> zb; // Odd part of b
+        }
+        loop {
+            let mut live = 0;
+            for i in 0..LANES {
+                live |= x[i] ^ y[i];
+            }
+            if live == 0 {
+                break; // Every lane has x == y
+            }
+            for i in 0..LANES {
+                let (a, b) = (x[i], y[i]);
+                let d = a.wrapping_sub(b);
+                let absd = if a > b { d } else { d.wrapping_neg() };
+                // d == 0 in a finished lane, so mask the shift and keep a as it is.
+                let next = absd >> (d.trailing_zeros() & 31);
+                y[i] = a.min(b);
+                x[i] = if a != b { next } else { a };
             }
         }
+        for i in 0..LANES {
+            cnt += ((x[i] << k[i]) == 1) as u64;
+        }
+        b0 += LANES as u64;
     }
+    // Remaining b values that do not fill all lanes
+    for b in b0..=hi {
+        cnt += (gcd_u32(a, b as u32) == 1) as u64;
+    }
+    cnt
+}
+
+// Function to approximate pi using probability that two numbers are coprime
+pub fn calc_pi(n: u32) -> f64 {
+    let cnt = count_coprime_pairs(n);
     // Probability that two numbers are coprime
     let prob = cnt as f64 / (n as f64 * n as f64);
     // Approximate pi using the formula: pi ≈ sqrt(6 / prob)
     (6.0 / prob).sqrt()
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn count_coprime_in_handles_b_up_to_u32_max() {
+        // b0 + LANES must not overflow when the range ends at u32::MAX.
+        for (lo, hi) in [(u32::MAX - 40, u32::MAX), (u32::MAX - 15, u32::MAX), (u32::MAX, u32::MAX)] {
+            for a in [1, 2, 3, 6, 255, 65536, u32::MAX - 1, u32::MAX] {
+                let expected = (lo..=hi).filter(|&b| gcd_u32(a, b) == 1).count() as u64;
+                assert_eq!(count_coprime_in(a, lo, hi), expected, "a = {a}, b in {lo}..={hi}");
+            }
+        }
+    }
+}

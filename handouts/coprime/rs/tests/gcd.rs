@@ -247,3 +247,17 @@ fn test_calc_pi_approximates_pi() {
     let pi = calc_pi(1000);
     assert!((pi - std::f64::consts::PI).abs() < 1e-2, "calc_pi(1000) = {pi}");
 }
+
+#[test]
+fn test_count_coprime_pairs_matches_reference() {
+    // Covers n smaller than, equal to, and not a multiple of the lane count.
+    for n in (0..=40).chain([100, 257]) {
+        let mut expected = 0u64;
+        for a in 1..=n {
+            for b in 1..=n {
+                expected += (gcd(a, b) == 1) as u64;
+            }
+        }
+        assert_eq!(count_coprime_pairs(n), expected, "n = {n}");
+    }
+}
