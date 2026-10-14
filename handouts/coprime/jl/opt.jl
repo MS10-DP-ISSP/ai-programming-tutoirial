@@ -34,40 +34,42 @@ end
 end
 
 # Count pairs (a, b) with 1 <= a, b <= N and gcd(a, b) == 1.
-# Every UInt32 value of N is handled: the count is at most N^2 < 2^64.
-countcoprime(N::UInt32) = sum(a -> countcoprime_in(a, one(UInt32), N), one(UInt32):N; init=0)
-
-# Count b with lo <= b <= hi and gcd(a, b) == 1, for a >= 1 and lo >= 1.
-# The GCDs with b, b+1, ..., b+15 are advanced one step at a time in lockstep.
+# For a fixed a, the GCDs with b, b+1, ..., b+15 are advanced one step at a time in lockstep.
 # A single GCD is a chain of dependent instructions; running 16 independent chains
 # side by side lets the CPU overlap them. @nexprs 16 expands the body into 16 copies
 # with variables x_1, ..., x_16 so that every lane lives in a register.
-function countcoprime_in(a::UInt32, lo::UInt32, hi::UInt32)
+#
+# Every value of N up to typemax(T) is handled. A block of 16 starting at b0 fits when
+# b0 <= N - 15, so b0 + 16 <= N + 1 never wraps: b0 is 1 mod 16 while typemax(T) - 15
+# is 0 mod 16. The count is an Int, which holds N^2 for N <= typemax(UInt32).
+function countcoprime(N::T) where {T<:Unsigned}
     cnt = 0    # Counter for coprime pairs
-    za = trailing_zeros(a)
-    ao = a >> za  # Odd part of a
-    # b0 is UInt64 so that b0 + 16 does not overflow when hi is close to typemax(UInt32).
-    b0 = UInt64(lo)
-    while b0 + 15 <= hi
-        @nexprs 16 i -> begin
-            b_i = (b0 + (i - 1)) % UInt32  # b <= hi fits in UInt32
-            zb_i = trailing_zeros(b_i)
-            k_i = min(za, zb_i)  # The common power of two
-            x_i = ao
-            y_i = b_i >> zb_i    # Odd part of b
+    lim = N >= T(15) ? N - T(15) : zero(T)  # Last b0 whose block of 16 fits in 1:N
+    for a in one(T):N
+        za = trailing_zeros(a)
+        ao = a >> za  # Odd part of a
+        b0 = one(T)
+        while b0 <= lim
+            @nexprs 16 i -> begin
+                b_i = b0 + T(i - 1)
+                zb_i = trailing_zeros(b_i)
+                k_i = min(za, zb_i)  # The common power of two
+                x_i = ao
+                y_i = b_i >> zb_i    # Odd part of b
+            end
+            while true
+                live = zero(T)
+                @nexprs 16 i -> (live |= x_i ⊻ y_i)
+                live == 0 && break  # Every lane has x == y
+                @nexprs 16 i -> ((x_i, y_i) = gcdstep(x_i, y_i))
+            end
+            @nexprs 16 i -> (cnt += (x_i << k_i) == 1)
+            b0 += T(16)
         end
-        while true
-            live = zero(UInt32)
-            @nexprs 16 i -> (live |= x_i ⊻ y_i)
-            live == 0 && break  # Every lane has x == y
-            @nexprs 16 i -> ((x_i, y_i) = gcdstep(x_i, y_i))
+        # Remaining b values that do not fill all lanes
+        for b in b0:N
+            cnt += mygcd(a, b) == 1
         end
-        @nexprs 16 i -> (cnt += (x_i << k_i) == 1)
-        b0 += 16
-    end
-    # Remaining b values that do not fill all lanes
-    for b in b0:UInt64(hi)
-        cnt += mygcd(a, b % UInt32) == 1
     end
     return cnt
 end
