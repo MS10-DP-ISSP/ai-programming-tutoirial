@@ -238,6 +238,13 @@
     "text": "私の場合\nあくまで個人の環境での話です．特定のサービスを推奨するものではありません！！！\n\nISSP の業務では Claude Code, Cursor を使っている\n個人の活動\n\nClaude Code (OSS デベロッパープログラムに加入)\nChatGPT (画像生成，高校数学の問題を解く，諸々の相談，Codex)\nCursor (文章執筆，スライドの作成)\nOpenCode (DeepSeek v4.1 Flash，API経由で)\nKimi (AIが行った作業の日報作成用)\n\nコーディングタスクは VPN 経由で自宅の Linux, macOS マシンにアクセスして行っている\nちなみに\n\nウルトラワイドモニターは作業が捗る"
   },
   {
+    "objectID": "slides/slide.html#注意事項",
+    "href": "slides/slide.html#注意事項",
+    "title": "Introduction to Coding Agents",
+    "section": "注意事項",
+    "text": "注意事項\n\nサービスによっては入力が学習に使われることもある．\n\nプライバシーポリシーを確認すること\n例えば OpenCode Zen で提供されている無料の「ステルスモデル」など\n\n学習に使われない場合でも，外部にデータを送信することには変わらない\n\n個人情報(住所，パスワード，APIキー)を入力しない\n機密情報（各組織のルールに依存）を入力しない\n\n必要に応じて Local LLM の検討も行うとよい"
+  },
+  {
     "objectID": "slides/slide.html#基本的なコマンド",
     "href": "slides/slide.html#基本的なコマンド",
     "title": "Introduction to Coding Agents",
@@ -250,13 +257,6 @@
     "title": "Introduction to Coding Agents",
     "section": "AI Agent の動作原理",
     "text": "AI Agent の動作原理\n\nユーザが入力した指示(プロンプト)をエージェントが理解し，その指示に従って行動を行う．\n多くはクラウド環境にあるGPUなどのアクセラレータで計算を実施\n計算結果をクラウド環境から返却し，ユーザに提示する．\nBash, Edit, Read, Write などのファイルの操作，コマンドの実行を実施することがある．"
-  },
-  {
-    "objectID": "slides/slide.html#注意事項",
-    "href": "slides/slide.html#注意事項",
-    "title": "Introduction to Coding Agents",
-    "section": "注意事項",
-    "text": "注意事項\n\nサービスによっては入力が学習に使われることもある．\n\nプライバシーポリシーを確認すること\n例えば OpenCode Zen で提供されている無料の「ステルスモデル」など\n\n学習に使われない場合でも，外部にデータを送信することには変わらない\n\n個人情報(住所，パスワード，APIキー)を入力しない\n機密情報（各組織のルールに依存）を入力しない\n\n必要に応じて Local LLM の検討も行うとよい"
   },
   {
     "objectID": "slides/slide.html#ai-agent-の動作原理-1",
