@@ -72,15 +72,17 @@ format:
 ```json
 "permissions": {
   "allow": [
-    "Bash(yarn test:*)"
+    "mcp__codegraph__*",
+    "Bash(gh pr merge:*)"
   ],
   "deny": [
-    "Read(./.env)",
-    "Read(./.env.*)",
-    "Read(./secrets/**)",
-    "Write(./production.config.*)",
+    "Read(**/.env)",
+    "Read(**/.env.*)",
+    "Read(**/secrets/**)",
+    "Edit(./production.config.*)",
     "Bash(git config :*)",
     "Bash(brew install :*)",
+    "Bash(chmod 777 :*)",
     "Bash(rm -rf /*)",
     "Bash(gh repo delete:*)"
   ],
