@@ -21,6 +21,6 @@ Quarto を [ここから](https://quarto.org/docs/download/) インストール�
 
 ```sh
 $ git clone https://github.com/MS10-DP-ISSP/ai-programming-tutoirial.git
-$ cd ai-programming-tutoiria
+$ cd ai-programming-tutoirial
 $ quarto preview
 ```
