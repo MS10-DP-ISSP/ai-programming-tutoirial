@@ -7,7 +7,7 @@
 ## Handouts
 
 - [Slide](slides/slide.qmd)
-  - [Appendix](settings_json.qmd)
+  - [Appendix](slides/settings_json.qmd)
 - [Preparation](handouts/preparation.qmd)
 
 ## ローカル環境で資料を閲覧
@@ -19,9 +19,11 @@ Quarto を [ここから](https://quarto.org/docs/download/) インストール�
 
 ```sh
 $ git clone https://github.com/MS10-DP-ISSP/ai-programming-tutoirial.git
-$ cd ai-programming-tutoiria
+$ cd ai-programming-tutoirial
 $ quarto preview
 ```
+
+静的ファイルとして書き出す場合は `quarto render` を実行します．出力は `_site/` に保存されます．
 
 ## DeckTape でスライドを PDF に出力する
 
@@ -31,7 +33,7 @@ $ quarto preview
 npm install -g decktape
 ```
 
-スライドのプレビューサーバーを起動し、ブラウザーでスライドを開けることを確認してから、リポジトリのルートで次のコマンドを実行します。
+スライドのプレビューサーバーを `quarto preview --port 5952` で起動し、ブラウザーでスライドを開けることを確認してから、リポジトリのルートで次のコマンドを実行します。
 URL のポート番号は、プレビューサーバーが表示するものに合わせてください。
 
 ```sh
