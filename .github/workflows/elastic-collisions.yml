@@ -1,0 +1,38 @@
+name: Elastic collisions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "handouts/elastic-collisions/**"
+      - ".github/workflows/elastic-collisions.yml"
+  pull_request:
+    paths:
+      - "handouts/elastic-collisions/**"
+      - ".github/workflows/elastic-collisions.yml"
+  workflow_dispatch:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: handouts/elastic-collisions/rust
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run tests
+        run: cargo test --locked
+
+  julia:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: handouts/elastic-collisions/julia
+    steps:
+      - uses: actions/checkout@v5
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.12"
+      - name: Run tests
+        run: julia --project -e 'using Pkg; Pkg.test()'
