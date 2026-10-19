@@ -1,0 +1,69 @@
+name: Coprime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "handouts/coprime/**"
+      - ".github/workflows/coprime.yml"
+  pull_request:
+    paths:
+      - "handouts/coprime/**"
+      - ".github/workflows/coprime.yml"
+  workflow_dispatch:
+
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: handouts/coprime/c
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and run (links libm via run.sh)
+        run: bash run.sh
+
+  js:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: handouts/coprime/js
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+      - name: Run
+        run: node main.js
+
+  rs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: handouts/coprime/rs
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run tests
+        run: cargo test --locked
+      - name: Run
+        run: cargo run --release --locked
+
+  julia:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [Naive, Stein, Opt]
+    defaults:
+      run:
+        working-directory: handouts/coprime/jl
+    steps:
+      - uses: actions/checkout@v5
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.12"
+      - name: Run tests
+        run: julia --project=${{ matrix.package }} -e 'using Pkg; Pkg.test()'
+      - name: Run
+        run: julia --project=${{ matrix.package }} -m ${{ matrix.package }}
